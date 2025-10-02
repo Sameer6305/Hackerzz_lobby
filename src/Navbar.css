@@ -54,7 +54,7 @@ body, html {
 }
 
 .navbar-links a:hover {
-  color: #d4af7a;
+  color: #7096a9;
 }
 
 .navbar-actions {
@@ -73,6 +73,7 @@ body, html {
 }
 
 .btn-signin {
+  margin-right: 20px;
   background: #fff;
   color: #18191c;
   border: 1px solid #ccc;

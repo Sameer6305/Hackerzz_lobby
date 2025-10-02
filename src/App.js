@@ -1,15 +1,20 @@
 
+
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import './App.css';
 import homeImage from './Img/home-image.png';
 import aboutImage from './Img/about-image.png';
+import SignIn from './SignIn';
+import Register from './Register';
+import Dashboard from './Dashboard';
 
 
-function App() {
+
+function MainContent() {
   return (
     <>
-      <Navbar />
       <div className="background-image-fade" />
       {/* Hero Section with large container and background */}
       <div className="hero-main-container">
@@ -20,7 +25,6 @@ function App() {
           </h1>
           <p className="glow-on-hover">Welcome to Hackerzz Lobby ,a place where coders and innovators connect, collaborate, and grow. Our platform makes hackathons simple by helping you create communities, find teammates, and manage projects all in one place. With an easy dashboard and real-time collaboration, you can focus on building ideas into reality while we take care of the organization.</p>
         </div>
-        {/* Removed extra hero image to keep only the background */}
       </div>
 
       {/* Featured Hackathons Section - smaller cards, grouped, with gap */}
@@ -83,8 +87,85 @@ function App() {
           </div>
         </div>
       </div>
+      {/* Features Section */}
+      <div id="features" className="features-section">
+        <h2 className="features-title">Our Features: Innovate. Collaborate. Achieve.</h2>
+        <div className="features-list">
+          <div className="feature-card">
+            <div className="feature-number">1.</div>
+            <div className="feature-content">
+              <div className="feature-title">Join or Create</div>
+              <div className="feature-desc">Find Your Team, Start Your Project. Seamless form and discover existing communities.</div>
+              <div className="feature-actions">
+                <button className="feature-btn-primary">Create New Community</button>
+                <button className="feature-btn-secondary">Explore Communities</button>
+              </div>
+            </div>
+            <div className="feature-icon">{/* brain icon */}🧠</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-number">2.</div>
+            <div className="feature-content">
+              <div className="feature-title">Build & Collaborate</div>
+              <div className="feature-desc">Your Community Hub for Success. Real-time file sharing, and project management tools.</div>
+            </div>
+            <div className="feature-icon">{/* calendar icon */}📅</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-number">3.</div>
+            <div className="feature-content">
+              <div className="feature-title">Access Knowledge & Deadlines</div>
+              <div className="feature-desc">Contextual information and timeline-based and automated deadlines.</div>
+            </div>
+            <div className="feature-icon">{/* chat icon */}💬</div>
+          </div>
+          <div className="feature-card">
+            <div className="feature-number">4.</div>
+            <div className="feature-content">
+              <div className="feature-title">Showcase & Grow</div>
+              <div className="feature-desc">Share your work, get feedback, and expand your network.</div>
+            </div>
+            <div className="feature-icon">{/* trophy icon */}🏆</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer / Contact Section */}
+      <footer id="contact" className="footer-section">
+        <div className="footer-content">
+          <h3>Contact Us</h3>
+          <p>Email: hackerzzlobby@example.com</p>
+          <p>Phone: +1 234 567 8901</p>
+          <p>Address: 123 Innovation Drive, Tech City, Country</p>
+          <p style={{marginTop: '18px', fontSize: '0.95rem', color: '#aaa'}}>© 2025 Hackerzz Lobby. All rights reserved.</p>
+        </div>
+      </footer>
     </>
   );
 }
 
-export default App;
+function App() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === '/dashboard';
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<MainContent />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </>
+  );
+}
+
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
+export default AppWrapper;
