@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import './App.css';
 import homeImage from './Img/home-image.png';
 import aboutImage from './Img/about-image.png';
+
 import SignIn from './SignIn';
 import Register from './Register';
 import Dashboard from './Dashboard';
@@ -146,10 +147,10 @@ function MainContent() {
 
 function App() {
   const location = useLocation();
-  const hideNavbar = location.pathname === '/dashboard';
+  const isDashboard = location.pathname === '/dashboard';
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!isDashboard && <Navbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />
         <Route path="/signin" element={<SignIn />} />
@@ -160,12 +161,10 @@ function App() {
   );
 }
 
-function AppWrapper() {
+export default function AppWrapper() {
   return (
     <Router>
       <App />
     </Router>
   );
 }
-
-export default AppWrapper;
