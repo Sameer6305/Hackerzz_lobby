@@ -4,12 +4,15 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import './App.css';
+
 import homeImage from './Img/home-image.png';
 import aboutImage from './Img/about-image.png';
+
 
 import SignIn from './SignIn';
 import Register from './Register';
 import Dashboard from './Dashboard';
+import Profile from './Profile';
 
 
 
@@ -156,6 +159,7 @@ function App() {
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   );

@@ -1,23 +1,82 @@
+
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
+import logoImg from './Img/logo.png';
+
 
 export default function Dashboard() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const navigate = useNavigate();
+  const [profileName, setProfileName] = useState(() => {
+    return localStorage.getItem('profileName') || 'Alex Turner';
+  });
+
+  useEffect(() => {
+    function syncProfileName() {
+      const name = localStorage.getItem('profileName') || 'Alex Turner';
+      setProfileName(name);
+    }
+    window.addEventListener('storage', syncProfileName);
+    return () => window.removeEventListener('storage', syncProfileName);
+  }, []);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="dashboard-outer">
       {/* Top App Bar */}
       <div className="dashboard-appbar">
         <div className="dashboard-appbar-logo">
-          <span className="dashboard-logo-icon">🦾</span>Hackerzz Lobby
+          <img src={logoImg} alt="Logo" className="dashboard-logo-img" />
         </div>
         <input className="dashboard-search" placeholder="Search..." />
         <div className="dashboard-appbar-actions">
           <span className="dashboard-appbar-bell">🔔</span>
-          <span className="dashboard-appbar-user">Alex Turner</span>
+          <div className="dashboard-appbar-user-menu-wrapper" ref={menuRef}>
+            <span
+              className="dashboard-appbar-user dashboard-appbar-user-clickable"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              Alex Turner ▾
+            </span>
+            {menuOpen && (
+              <div className="dashboard-user-dropdown">
+                <button className="dashboard-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
+                <button className="dashboard-user-dropdown-item">Settings</button>
+                <div className="dashboard-user-dropdown-divider" />
+                <button className="dashboard-user-dropdown-item dashboard-user-dropdown-signout">Sign Out</button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div className="dash-root dash-root-flex">
-        {/* Sidebar */}
-        <aside className="dash-sidebar">
-          <div className="dash-logo dashboard-sidebar-logo"><span className="dashboard-logo-icon">🦾</span>Hackerzz Lobby</div>
+      <div className="dashboard-3col-layout">
+        {/* Left Sidebar */}
+        <aside className="dashboard-leftbar">
+          <div className="dashboard-user-card">
+            <img src={logoImg} alt="Logo" className="dashboard-logo-img dashboard-logo-img-sidebar" />
+            <div className="dashboard-user-avatar">{profileName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)}</div>
+            <div className="dashboard-user-name">{profileName}</div>
+            <div className="dashboard-user-role">Student</div>
+            <div className="dashboard-user-status-active">Active</div>
+            <div className="dashboard-profile-progress">
+              <div className="dashboard-profile-progress-bar" style={{width: '42%'}}></div>
+              <span className="dashboard-profile-progress-label">42%</span>
+            </div>
+          </div>
           <ul className="dash-menu">
             <li className="active">Dashboard</li>
             <li>Recent Hackathons</li>
@@ -25,17 +84,19 @@ export default function Dashboard() {
             <li>Inbox</li>
             <li>Deadlines</li>
             <li>Activity</li>
+            <li onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>Profile</li>
           </ul>
           <button className="dash-signout">Sign Out</button>
         </aside>
         {/* Main Content */}
-        <main className="dash-main dashboard-main">
+        <main className="dashboard-main-content">
+          {/* ...existing dashboard main content (header, cards, etc) goes here... */}
           {/* Dashboard Header */}
           <div className="dashboard-header">
             <div className="dashboard-header-title">Your Hacker Stats</div>
             <div className="dashboard-header-actions">
               <button className="dashboard-create-btn">Create New Community</button>
-              <button className="dashboard-header-btn">View Profile</button>
+              <button className="dashboard-header-btn" onClick={() => navigate('/profile')}>View Profile</button>
               <button className="dashboard-header-btn">Connect Apps</button>
             </div>
           </div>
@@ -78,27 +139,6 @@ export default function Dashboard() {
                     <div className="dashboard-project-title">Web Wizard</div>
                   </div>
                   <span className="dashboard-project-status dashboard-project-status-live">Live</span>
-                </div>
-              </div>
-            </div>
-            <div className="dashboard-card dashboard-card-deadlines">
-              <div className="dashboard-card-title">Upcoming Deadlines</div>
-              <div className="dashboard-card-content">
-                <div className="dashboard-deadline-list">
-                  <div className="dashboard-deadline-item">
-                    <span className="dashboard-deadline-status dashboard-deadline-status-soon">Soon</span>
-                    <div>
-                      <div className="dashboard-deadline-title">React Project</div>
-                      <div className="dashboard-deadline-desc">20.3.31</div>
-                    </div>
-                  </div>
-                  <div className="dashboard-deadline-item">
-                    <span className="dashboard-deadline-status dashboard-deadline-status-active">Active</span>
-                    <div>
-                      <div className="dashboard-deadline-title">Web Wizard</div>
-                      <div className="dashboard-deadline-desc">15 Hetto St Hackathon</div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -151,8 +191,30 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          {/* Removed duplicate deadlines row, now included above */}
         </main>
+        {/* Right Sidebar */}
+        <aside className="dashboard-rightbar">
+          <div className="dashboard-card dashboard-latest-hackathons">
+            <div className="dashboard-card-title">Latest Hackathons</div>
+            <div className="dashboard-latest-hackathon-list">
+              <div className="dashboard-latest-hackathon-item">
+                <div className="dashboard-latest-hackathon-title">Global Code Jam 2024</div>
+                <div className="dashboard-latest-hackathon-date">Oct 10, 2025</div>
+                <div className="dashboard-latest-hackathon-status">Registration Open</div>
+              </div>
+              <div className="dashboard-latest-hackathon-item">
+                <div className="dashboard-latest-hackathon-title">AI Innovate Sprint</div>
+                <div className="dashboard-latest-hackathon-date">Oct 15, 2025</div>
+                <div className="dashboard-latest-hackathon-status">Upcoming</div>
+              </div>
+              <div className="dashboard-latest-hackathon-item">
+                <div className="dashboard-latest-hackathon-title">Web Wizard Challenge</div>
+                <div className="dashboard-latest-hackathon-date">Oct 20, 2025</div>
+                <div className="dashboard-latest-hackathon-status">Upcoming</div>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
