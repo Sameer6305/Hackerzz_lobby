@@ -13,6 +13,7 @@ import SignIn from './SignIn';
 import Register from './Register';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
+import CommunityCreate from './CommunityCreate';
 
 
 
@@ -148,18 +149,24 @@ function MainContent() {
   );
 }
 
+import DashboardAppbar from './DashboardAppbar';
+
 function App() {
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
+  const isProfile = location.pathname === '/profile';
+  const isCommunityCreate = location.pathname === '/community-create';
   return (
     <>
-      {!isDashboard && <Navbar />}
+      {!isDashboard && !isProfile && !isCommunityCreate && <Navbar />}
+      {(isProfile || isCommunityCreate) && <DashboardAppbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/community-create" element={<CommunityCreate />} />
       </Routes>
     </>
   );
