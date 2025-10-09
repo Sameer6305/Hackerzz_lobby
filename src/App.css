@@ -1,116 +1,12 @@
 .community-form-title {
   margin-top: 12px;
-  color: #232733;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 32px;
-  text-align: center;
-}
-/* Community Create Page Styles */
-.community-create-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  background: #f7f9fb;
-  padding-top: 48px;
-}
-
-.community-create-page h2 {
-  color: #232733;
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 32px;
-}
-
-.community-form {
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
-  padding: 36px 32px 28px 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  min-width: 340px;
-  max-width: 420px;
-  width: 100%;
-}
-
-.community-form label {
-  display: flex;
-  flex-direction: column;
-  font-weight: 600;
-  color: #232733;
-  font-size: 1.05rem;
-  gap: 6px;
-}
-
-.community-form input,
-.community-form textarea {
-  padding: 9px 12px;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 7px;
-  font-size: 1rem;
-  background: #f7f9fb;
-  color: #232733;
-  margin-top: 2px;
-  resize: none;
-}
-
-.community-form textarea {
-  min-height: 60px;
-  max-height: 180px;
-}
-
-.community-form input:focus,
-.community-form textarea:focus {
-  outline: 2px solid #4fd18b;
-  border-color: #4fd18b;
-}
-
-.form-error {
-  color: #e74c3c;
-  font-size: 1rem;
-  margin-bottom: 8px;
-  font-weight: 500;
-}
-
-.form-actions {
-  display: flex;
-  gap: 16px;
-  margin-top: 10px;
-  justify-content: flex-end;
-}
-
-@media (max-width: 600px) {
-  .community-form {
-    min-width: 0;
-    max-width: 98vw;
-    padding: 18px 6vw 18px 6vw;
-  }
-  .community-create-page h2 {
-    font-size: 1.3rem;
-    margin-bottom: 18px;
-  }
-}
-/* Appbar profile dropdown styles for Dashboard.js */
-.appbar-user {
-  position: relative;
-}
-.appbar-user-dropdown {
-  position: absolute;
-  top: 54px;
-  right: 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.13);
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.23);
   min-width: 170px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
   padding: 8px 0;
-  animation: fadeIn 0.18s;
+  animation: fadeIn 0.38s;
 }
 .appbar-user-dropdown-item {
   background: none;
@@ -120,7 +16,7 @@
   font-size: 1.05rem;
   color: #232733;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.05s;
 }
 .appbar-user-dropdown-item:hover {
   background: #f7f9fb;
@@ -144,17 +40,18 @@
 
 .dashboard-sidebar {
   width: 260px;
-  background: #232733;
-  color: #fff;
+  background: #3C424D;
+  color: #C0C0C0;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 32px 0 0 0;
   min-height: 100vh;
+  border-right: 1px solid #333333;
 }
 .sidebar-logo {
-  width: 48px;
-  height: 48px;
+  width: 128px;
+  height: 108px;
   border-radius: 12px;
   margin-bottom: 18px;
 }
@@ -163,19 +60,19 @@
   margin-bottom: 32px;
 }
 .sidebar-user-name {
-  font-size: 1.1rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #fff;
 }
 .sidebar-user-role {
-  font-size: 0.98rem;
+  font-size: 1.5rem;
   color: #bfc6d1;
 }
 .sidebar-user-status {
-  font-size: 0.95rem;
+  font-size: 1.45rem;
   color: #4fd18b;
   font-weight: 600;
-  margin-top: 2px;
+  margin-top: 6px;
 }
 .sidebar-nav ul {
   list-style: none;
@@ -185,16 +82,16 @@
 }
 .sidebar-nav li {
   padding: 13px 32px;
-  color: #bfc6d1;
+  color: #A0A0A0;
   font-size: 1.08rem;
   cursor: pointer;
   border-left: 4px solid transparent;
   transition: background 0.18s, color 0.18s, border-color 0.18s;
 }
 .sidebar-nav li.active, .sidebar-nav li:hover {
-  background: #232e44;
-  color: #4fd18b;
-  border-left: 4px solid #4fd18b;
+  background: #2C2C2C;
+  color: #FFFFFF;
+  border-left: 4px solid #2C2C2C;
 }
 
 .dashboard-main-area {
@@ -207,33 +104,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #232733;
+  background: #1A1A1A;
   padding: 0 36px;
   height: 68px;
-  border-bottom: 1px solid #232e44;
+  border-bottom: 1px solid #333333;
 }
 .appbar-left {
   display: flex;
   align-items: center;
   gap: 16px;
 }
-.appbar-logo {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-}
 .appbar-title {
-  color: #fff;
+  color: #FFFFFF;
+  font-family: sans-serif typeface;
   font-size: 1.45rem;
   font-weight: 700;
   letter-spacing: 1px;
 }
 .appbar-search {
-  background: #232e44;
+  background: #2C2C2C;
   border: none;
   border-radius: 8px;
   padding: 10px 22px;
-  color: #bfc6d1;
+  color: #E0E0E0;
   font-size: 1.05rem;
   width: 320px;
   margin: 0 32px;
@@ -254,20 +147,21 @@
 .appbar-user-info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
+  margin-bottom: 18px;
 }
 .appbar-user-name {
-  color: #fff;
-  font-size: 1.08rem;
-  font-weight: 600;
+  color: #FFFFFF;
+  font-size: 1.48rem;
+  font-weight: 800;
 }
 .appbar-user-role {
-  color: #bfc6d1;
+  color: #E0E0E0;
   font-size: 0.98rem;
 }
 .appbar-bell {
   font-size: 1.3rem;
-  color: #bfc6d1;
+  color: #c14040;
   margin-left: 10px;
   cursor: pointer;
 }
@@ -280,13 +174,14 @@
   padding: 38px 38px 0 38px;
 }
 .dashboard-card {
-  background: #f7f9fb;
+  background: #FFFFFF;
   border-radius: 18px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.07);
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
   padding: 28px 28px 22px 28px;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  border: 1px solid #F0F0F0;
 }
 .stats-header {
   display: flex;
@@ -294,18 +189,12 @@
   margin-bottom: 18px;
 }
 .stats-btn {
-  background: #e9edf7;
-  color: #232733;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 8px 18px;
-  cursor: pointer;
-  transition: background 0.18s, color 0.18s;
+  background: transparent;
+  color: #628285;
+  border: 1.5px solid #070606;
 }
 .stats-btn-primary {
-  background: #4fd18b;
+  background: linear-gradient(90deg, #007BFF 0%, #1E90FF 100%);
   color: #fff;
 }
 .stats-btn-primary:hover {
@@ -322,17 +211,18 @@
   gap: 12px;
   font-size: 1.13rem;
   font-weight: 600;
-  color: #232733;
+  color: #333333;
   background: #fff;
   border-radius: 12px;
   padding: 18px 18px;
   box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
 }
 .stats-icon {
+  color: #007BFF;
   font-size: 1.7rem;
 }
 .stats-badge-active {
-  background: #4fd18b;
+  background: #28A745;
   color: #fff;
   font-size: 0.95rem;
   border-radius: 8px;
@@ -344,7 +234,7 @@
   font-size: 1.18rem;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #232733;
+  color: #333333;
 }
 .projects-list {
   display: flex;
@@ -369,11 +259,11 @@
 .project-title {
   font-size: 1.08rem;
   font-weight: 600;
-  color: #232733;
+  color: #333333;
 }
 .project-desc {
   font-size: 0.97rem;
-  color: #bfc6d1;
+  color: #6C757D;
 }
 .project-btn-primary {
   background: #4fd18b;
@@ -394,22 +284,19 @@
   margin-left: auto;
 }
 .project-status.soon {
-  background: #ffe6b0;
-  color: #bfa164;
+  background: #FFA500;
 }
 .project-status.active {
-  background: #e0fbe6;
-  color: #4fd18b;
+  background: #28A745;
 }
 .project-status.live {
-  background: #e6eaff;
-  color: #4b6cff;
+  background: #DC3545;
 }
 .hackathons-header {
   font-size: 1.18rem;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #232733;
+  color: #333333;
 }
 .hackathons-list {
   display: flex;
@@ -428,7 +315,7 @@
 .hackathon-title {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #232733;
+  color: #333333;
 }
 .hackathon-date {
   font-size: 0.97rem;
@@ -442,8 +329,7 @@
   margin-left: auto;
 }
 .hackathon-status.open {
-  background: #e0fbe6;
-  color: #4fd18b;
+  background: #28A745;
 }
 .hackathon-status.upcoming {
   background: #e6eaff;
@@ -453,7 +339,7 @@
   font-size: 1.18rem;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #232733;
+  color: #333333;
 }
 .communities-list {
   display: flex;
@@ -469,17 +355,17 @@
 .community-title {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #232733;
+  color: #333333;
 }
 .community-desc {
   font-size: 0.97rem;
-  color: #bfc6d1;
+  color: #6C757D;
 }
 .hackivity-header {
   font-size: 1.18rem;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #232733;
+  color: #333333;
 }
 .hackivity-list {
   display: flex;
@@ -495,7 +381,7 @@
 .hackivity-title {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #232733;
+  color: #333333;
 }
 .hackivity-date {
   font-size: 0.97rem;
@@ -841,9 +727,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: #1A1A1A;
   height: 64px;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+  border-bottom: 1px solid #333333;
   padding: 0 32px;
   z-index: 10;
 }
@@ -865,7 +751,7 @@
 }
 .dashboard-appbar-bell {
   font-size: 1.3rem;
-  color: #bdbdbd;
+  color: #E0E0E0;
   cursor: pointer;
 }
 /* User menu dropdown styles */
@@ -2068,4 +1954,90 @@ html {
     top: 56px;
     height: calc(100vh - 56px);
   }
+}
+
+/* --- DASHBOARD COLOR SCHEME OVERRIDE --- */
+.dashboard-root {
+  background: #1A1A1A;
+}
+.dashboard-sidebar {
+  background: #1A1A1A;
+  color: #C0C0C0;
+  border-right: 1px solid #333333;
+}
+.sidebar-nav li {
+  color: #A0A0A0;
+}
+.sidebar-nav li.active, .sidebar-nav li:hover {
+  background: #2C2C2C;
+  color: #FFFFFF;
+  border-left: 4px solid #2C2C2C;
+}
+.dashboard-appbar {
+  background: #1A1A1A;
+  border-bottom: 1px solid #333333;
+}
+.appbar-title {
+  color: #FFFFFF;
+}
+.appbar-search {
+  background: #2C2C2C;
+  color: #E0E0E0;
+}
+.appbar-user-name {
+  color: #FFFFFF;
+}
+.appbar-user-role {
+  color: #E0E0E0;
+}
+.appbar-bell {
+  color: #E0E0E0;
+}
+.dashboard-card {
+  background: #FFFFFF;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
+  border: 1px solid #F0F0F0;
+}
+.stats-btn.stats-btn-primary {
+  background: linear-gradient(90deg, #007BFF 0%, #1E90FF 100%);
+  color: #fff;
+}
+.stats-btn {
+  background: transparent;
+  color: #A0A0A0;
+  border: 1.5px solid #A0A0A0;
+}
+.stats-btn:hover {
+  background: #2C2C2C;
+  color: #FFFFFF;
+}
+.stats-badge-active {
+  background: #28A745;
+}
+.project-status.soon {
+  background: #FFA500;
+}
+.project-status.active {
+  background: #28A745;
+}
+.project-status.live {
+  background: #DC3545;
+}
+.stats-header-title {
+  color: #333333;
+}
+.stats-item {
+  color: #333333;
+}
+.stats-icon {
+  color: #007BFF;
+}
+.projects-header {
+  color: #333333;
+}
+.project-title {
+  color: #333333;
+}
+.project-desc {
+  color: #6C757D;
 }

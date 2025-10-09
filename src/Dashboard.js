@@ -77,7 +77,7 @@ export default function Dashboard() {
         {/* Top App Bar */}
         <header className="dashboard-appbar">
           <div className="appbar-left">
-            <img src={logoImg} alt="Logo" className="appbar-logo" />
+            {/* Logo removed from appbar as requested */}
             <span className="appbar-title">HACKER.DEV</span>
           </div>
           <input className="appbar-search" placeholder="Search" />

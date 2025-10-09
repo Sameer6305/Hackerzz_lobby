@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logoImg from './Img/logo.png';
 
 export default function DashboardAppbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,7 +19,6 @@ export default function DashboardAppbar() {
   return (
     <header className="dashboard-appbar">
       <div className="appbar-left">
-        <img src={logoImg} alt="Logo" className="appbar-logo" />
         <span className="appbar-title">HACKER.DEV</span>
       </div>
       <input className="appbar-search" placeholder="Search" />
