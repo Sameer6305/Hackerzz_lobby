@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardAppbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -16,6 +17,14 @@ export default function DashboardAppbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // When menu opens, ensure the dropdown is visible (scroll into view)
+  useEffect(() => {
+    if (menuOpen && dropdownRef.current) {
+      // Smoothly scroll the dropdown into view if it's outside the viewport
+      dropdownRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [menuOpen]);
+
   return (
     <header className="dashboard-appbar">
       <div className="appbar-left">
@@ -24,9 +33,8 @@ export default function DashboardAppbar() {
       <input className="appbar-search" placeholder="Search" />
       <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
-        <div className="appbar-user-info" style={{ textAlign: 'right', alignSelf: 'flex-start', marginTop: '2px' }}>
-          <div className="appbar-user-name" style={{ color: '#181c23', fontWeight: 700, fontSize: '1.08rem' }}>Ales Turner</div>
-          <div className="appbar-user-role" style={{ color: '#bfc6d1', fontSize: '0.98rem' }}>Sophie</div>
+        <div className="appbar-user-info">
+          <div className="appbar-user-name">Ales Turner</div>
         </div>
         <div
           className="appbar-user-avatar"
@@ -39,7 +47,7 @@ export default function DashboardAppbar() {
           AT
         </div>
         {menuOpen && (
-          <div className="appbar-user-dropdown">
+          <div className="appbar-user-dropdown" ref={dropdownRef}>
             <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/dashboard'); }}>Home</button>
             <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
             <button className="appbar-user-dropdown-item">Settings</button>

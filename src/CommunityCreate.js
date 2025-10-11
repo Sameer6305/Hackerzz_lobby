@@ -38,20 +38,56 @@ export default function CommunityCreate() {
     <div className="community-create-page">
       <h2 className="community-form-title">Create New Community</h2>
       <form onSubmit={handleFormSubmit} className="community-form">
-        <label>Community Name*<input name="communityName" value={form.communityName} onChange={handleFormChange} required /></label>
-        <label>Hackathon Name*<input name="hackathonName" value={form.hackathonName} onChange={handleFormChange} required /></label>
-        <label>Project Domain*<input name="projectDomain" value={form.projectDomain} onChange={handleFormChange} required placeholder="e.g. Web, AI, Blockchain" /></label>
-        <label>Project Name*<input name="projectName" value={form.projectName} onChange={handleFormChange} required /></label>
-  <label>Number of Members<input name="numberOfMembers" type="number" min="1" value={form.numberOfMembers} onChange={handleFormChange} placeholder="e.g. 4" /></label>
-  <label>Team Members (comma separated)<input name="teamMembers" value={form.teamMembers} onChange={handleFormChange} placeholder="e.g. Alice, Bob, Carol" /></label>
-        <label>Hackathon URL (optional)<input name="hackathonUrl" value={form.hackathonUrl} onChange={handleFormChange} /></label>
-        <label>Community Guidelines (optional)<textarea name="communityGuidelines" value={form.communityGuidelines} onChange={handleFormChange} /></label>
-        <label>Project Description<textarea name="description" value={form.description} onChange={handleFormChange} placeholder="Describe your project..." /></label>
-        <label>Contact Email<input name="contactEmail" type="email" value={form.contactEmail} onChange={handleFormChange} placeholder="For notifications (optional)" /></label>
+        <div className="form-row">
+          <label htmlFor="communityName">Community Name*</label>
+          <input id="communityName" name="communityName" value={form.communityName} onChange={handleFormChange} required />
+        </div>
+        <div className="form-row">
+          <label htmlFor="hackathonName">Hackathon Name*</label>
+          <input id="hackathonName" name="hackathonName" value={form.hackathonName} onChange={handleFormChange} required />
+        </div>
+        <div className="form-row">
+          <label htmlFor="projectDomain">Project Domain*</label>
+          <input id="projectDomain" name="projectDomain" value={form.projectDomain} onChange={handleFormChange} required placeholder="e.g. Web, AI, Blockchain" />
+        </div>
+        <div className="form-row">
+          <label htmlFor="projectName">Project Name*</label>
+          <input id="projectName" name="projectName" value={form.projectName} onChange={handleFormChange} required />
+        </div>
+
+        <div className="form-row">
+          <label htmlFor="numberOfMembers">Number of Members</label>
+          <input id="numberOfMembers" name="numberOfMembers" type="number" min="1" value={form.numberOfMembers} onChange={handleFormChange} placeholder="e.g. 4" />
+        </div>
+        <div className="form-row">
+          <label htmlFor="teamMembers">Team Members (comma separated)</label>
+          <input id="teamMembers" name="teamMembers" value={form.teamMembers} onChange={handleFormChange} placeholder="e.g. Alice, Bob, Carol" />
+        </div>
+
+        <div className="form-row full">
+          <label htmlFor="hackathonUrl">Hackathon URL (optional)</label>
+          <input id="hackathonUrl" name="hackathonUrl" value={form.hackathonUrl} onChange={handleFormChange} />
+        </div>
+
+        <div className="form-row full">
+          <label htmlFor="communityGuidelines">Community Guidelines (optional)</label>
+          <textarea id="communityGuidelines" name="communityGuidelines" value={form.communityGuidelines} onChange={handleFormChange} />
+        </div>
+
+        <div className="form-row full">
+          <label htmlFor="description">Project Description</label>
+          <textarea id="description" name="description" value={form.description} onChange={handleFormChange} placeholder="Describe your project..." />
+        </div>
+
+        <div className="form-row">
+          <label htmlFor="contactEmail">Contact Email</label>
+          <input id="contactEmail" name="contactEmail" type="email" value={form.contactEmail} onChange={handleFormChange} placeholder="For notifications (optional)" />
+        </div>
+
         {formError && <div className="form-error">{formError}</div>}
         <div className="form-actions">
-          <button type="submit" className="stats-btn stats-btn-primary">Create</button>
-          <button type="button" className="stats-btn" onClick={() => navigate('/dashboard')}>Cancel</button>
+          <button type="submit" className="btn btn-primary">Create Community</button>
+          <button type="button" className="btn btn-ghost" onClick={() => navigate('/dashboard')}>Cancel</button>
         </div>
       </form>
     </div>

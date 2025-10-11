@@ -1,10 +1,9 @@
 .community-form-title {
-  margin-top: 12px;
-  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.23);
+  margin-top: 2px;
   min-width: 170px;
   z-index: 1000;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  text-align: center;
   padding: 8px 0;
   animation: fadeIn 0.38s;
 }
@@ -38,6 +37,65 @@
   font-family: 'Inter', Arial, sans-serif;
 }
 
+/* Sidebar collapsed state */
+.sidebar-collapsed .dashboard-sidebar {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-right: none;
+}
+.sidebar-collapsed .dashboard-main-area { margin-left: 0; }
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  margin-right: 12px;
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.sidebar-toggle svg { display:block; }
+.sidebar-toggle--sidebar {
+  position: absolute;
+  top: 12px;
+  right: 18px; /* nudge slightly right */
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 160ms ease, transform 220ms ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.sidebar-toggle--sidebar:hover { background: rgba(255,255,255,0.10); transform: translateY(-1px); }
+.sidebar-toggle--sidebar svg { width:18px; height:18px; }
+
+.sidebar-collapsed .sidebar-profile > .sidebar-user-info,
+.sidebar-collapsed .dashboard-sidebar .sidebar-nav { display: none; }
+
+/* Appbar toggle when sidebar is collapsed */
+.appbar-toggle {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+.appbar-toggle svg { width:18px; height:18px; }
+
+/* Smooth transition for collapsing sidebar */
+.dashboard-sidebar {
+  transition: width 300ms ease, padding 300ms ease, opacity 200ms ease;
+}
+.sidebar-collapsed .dashboard-sidebar { transition: width 420ms cubic-bezier(.2,.9,.2,1), padding 420ms ease; }
+
 .dashboard-sidebar {
   width: 260px;
   background: #3C424D;
@@ -48,6 +106,7 @@
   padding: 32px 0 0 0;
   min-height: 100vh;
   border-right: 1px solid #333333;
+  position: relative; /* needed for absolute toggle */
 }
 .sidebar-logo {
   width: 128px;
@@ -136,6 +195,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
 }
 .appbar-user-avatar {
   width: 38px;
@@ -148,22 +208,36 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  margin-bottom: 18px;
+  margin: 0 8px 0 0;
+  justify-content: center;
 }
 .appbar-user-name {
   color: #FFFFFF;
-  font-size: 1.48rem;
-  font-weight: 800;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1;
 }
-.appbar-user-role {
-  color: #E0E0E0;
-  font-size: 0.98rem;
-}
+.appbar-user-role { display: none; }
 .appbar-bell {
   font-size: 1.3rem;
   color: #c14040;
   margin-left: 10px;
   cursor: pointer;
+}
+
+/* Dropdown positioning for profile menu */
+.appbar-user-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  min-width: 180px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
 }
 
 .dashboard-grid {
@@ -199,6 +273,28 @@
 }
 .stats-btn-primary:hover {
   background: #3bbd7a;
+}
+
+/* Make small header/tab buttons more clickable and slightly larger */
+.stats-btn, .stats-btn-primary, .feature-btn-primary, .hackathon-btn {
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 12px; /* a bit larger touch/click area */
+  transition: transform 160ms ease, box-shadow 160ms ease, background 120ms ease;
+  will-change: transform, box-shadow;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.stats-btn svg, .stats-btn-primary svg, .feature-btn-primary svg, .hackathon-btn svg { width: 18px; height: 18px; }
+.stats-btn:hover, .stats-btn-primary:hover, .feature-btn-primary:hover, .hackathon-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+.stats-btn:active, .stats-btn-primary:active, .feature-btn-primary:active, .hackathon-btn:active {
+  transform: translateY(0) scale(0.995);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 .stats-body {
   display: flex;
@@ -429,6 +525,36 @@
   align-self: flex-start;
 }
 
+/* Community create form styles appended by agent */
+.community-create-page {
+  max-width: 860px;
+  margin: 36px auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.06);
+}
+.community-form {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 18px;
+}
+.community-form .form-row { display:flex; flex-direction:column; }
+.community-form .form-row.full { grid-column: 1 / -1; }
+.community-form label { font-weight:700; color:#333; margin-bottom:6px; }
+.community-form input, .community-form textarea { padding:10px 12px; border:1px solid #e6e6e6; border-radius:8px; background:#fafafa; }
+.community-form textarea { min-height:110px; resize:vertical; }
+.form-actions { grid-column:1 / -1; display:flex; gap:12px; justify-content:flex-end; margin-top:12px; }
+.btn { padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer; border:none; }
+.btn-primary { background:#4fd18b; color:#fff; }
+.btn-ghost { background:#fff; color:#333; border:1px solid #e6e6e6; }
+
+@media (max-width: 880px) {
+  .community-form { grid-template-columns: 1fr; }
+  .community-create-page { margin: 18px; padding: 18px; }
+}
+
 @media (max-width: 1200px) {
   .dashboard-cards-row {
     flex-direction: column;
@@ -613,13 +739,17 @@
 }
 .dashboard-latest-hackathon-item {
   background: #fff;
-  border-radius: 8px;
-  padding: 10px 16px;
-  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
+  position: absolute;
+  top: 12px;
+  right: 12px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  transition: background 160ms ease, transform 220ms ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
+.sidebar-toggle--sidebar:hover { background: rgba(255,255,255,0.10); transform: translateY(-1px); }
+.sidebar-toggle--sidebar svg { width:18px; height:18px; }
 .dashboard-latest-hackathon-title {
   font-weight: 700;
   color: #3d3473;

@@ -5,6 +5,7 @@ import logoImg from './Img/logo.png';
 
 export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
@@ -49,7 +50,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard-root">
+    <div className={"dashboard-root" + (sidebarOpen ? "" : " sidebar-collapsed")}>
       {/* Sidebar */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-profile">
@@ -59,6 +60,13 @@ export default function Dashboard() {
             <div className="sidebar-user-role">Student</div>
             <div className="sidebar-user-status">Active</div>
           </div>
+              {sidebarOpen && (
+                <button className="sidebar-toggle sidebar-toggle--sidebar" onClick={() => setSidebarOpen(false)} aria-label="Collapse sidebar">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              )}
         </div>
         <nav className="sidebar-nav">
           <ul>
@@ -77,15 +85,20 @@ export default function Dashboard() {
         {/* Top App Bar */}
         <header className="dashboard-appbar">
           <div className="appbar-left">
-            {/* Logo removed from appbar as requested */}
+            {!sidebarOpen && (
+              <button className="appbar-toggle" onClick={() => setSidebarOpen(true)} aria-label="Open sidebar">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 6L15 12L9 18" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
             <span className="appbar-title">HACKER.DEV</span>
           </div>
           <input className="appbar-search" placeholder="Search" />
           <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
-            <div className="appbar-user-info" style={{ textAlign: 'right', alignSelf: 'flex-start', marginTop: '2px' }}>
-              <div className="appbar-user-name" style={{ color: '#181c23', fontWeight: 700, fontSize: '1.08rem' }}>Ales Turner</div>
-              <div className="appbar-user-role" style={{ color: '#bfc6d1', fontSize: '0.98rem' }}>Sophie</div>
+            <div className="appbar-user-info">
+              <div className="appbar-user-name">Ales Turner</div>
             </div>
             <div
               className="appbar-user-avatar"
