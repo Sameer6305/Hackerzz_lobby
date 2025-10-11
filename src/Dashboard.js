@@ -204,23 +204,23 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="dashboard-card hackivity-card">
-            <div className="hackivity-header">Recent Hackivity</div>
-            <div className="hackivity-list">
-              <div className="hackivity-item">
-                <div className="hackivity-title">Global Cde Jam 2024</div>
-                <div className="hackivity-date">10.3.040</div>
-                <span className="hackivity-status">Entrance Instance</span>
+          <div className="dashboard-card activity-card">
+            <div className="activity-header">Recent Activity</div>
+            <div className="activity-list">
+              <div className="activity-item">
+                <div className="activity-title">Global Code Jam 2024</div>
+                <div className="activity-date">10.3.040</div>
+                <span className="activity-status">Entrance Instance</span>
               </div>
-              <div className="hackivity-item">
-                <div className="hackivity-title">Global Cde Jam 2024</div>
-                <div className="hackivity-date">161.142.010.1D0E</div>
-                <span className="hackivity-status">Activity</span>
+              <div className="activity-item">
+                <div className="activity-title">Global Code Jam 2024</div>
+                <div className="activity-date">161.142.010.1D0E</div>
+                <span className="activity-status">Activity</span>
               </div>
-              <div className="hackivity-item">
-                <div className="hackivity-title">Web Wicard Challenge</div>
-                <div className="hackivity-date">QX 10.3.063</div>
-                <span className="hackivity-status">Versions</span>
+              <div className="activity-item">
+                <div className="activity-title">Web Wizard Challenge</div>
+                <div className="activity-date">QX 10.3.063</div>
+                <span className="activity-status">Versions</span>
               </div>
             </div>
           </div>
