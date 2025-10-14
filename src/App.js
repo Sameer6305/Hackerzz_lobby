@@ -14,6 +14,11 @@ import Register from './Register';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
 import CommunityCreate from './CommunityCreate';
+import RecentHackathons from './RecentHackathons';
+import Communities from './Communities';
+import Notifications from './Notifications';
+import Deadlines from './Deadlines';
+import Activity from './Activity';
 
 
 
@@ -156,9 +161,14 @@ function App() {
   const isDashboard = location.pathname === '/dashboard';
   const isProfile = location.pathname === '/profile';
   const isCommunityCreate = location.pathname === '/community-create';
+  const isRecentHackathons = location.pathname === '/recent-hackathons';
+  const isCommunities = location.pathname === '/communities';
+  const isNotifications = location.pathname === '/notifications';
+  const isDeadlines = location.pathname === '/deadlines';
+  const isActivity = location.pathname === '/activity';
   return (
     <>
-      {!isDashboard && !isProfile && !isCommunityCreate && <Navbar />}
+      {!isDashboard && !isProfile && !isCommunityCreate && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
       {(isProfile || isCommunityCreate) && <DashboardAppbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />
@@ -167,6 +177,11 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/community-create" element={<CommunityCreate />} />
+        <Route path="/recent-hackathons" element={<RecentHackathons />} />
+        <Route path="/communities" element={<Communities />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/deadlines" element={<Deadlines />} />
+        <Route path="/activity" element={<Activity />} />
       </Routes>
     </>
   );

@@ -63,7 +63,7 @@ export default function Dashboard() {
               {sidebarOpen && (
                 <button className="sidebar-toggle sidebar-toggle--sidebar" onClick={() => setSidebarOpen(false)} aria-label="Collapse sidebar">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M15 18L9 12L15 6" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
               )}
@@ -71,11 +71,11 @@ export default function Dashboard() {
         <nav className="sidebar-nav">
           <ul>
             <li className="active">Dashboard</li>
-            <li>Recent Hackathons</li>
-            <li>Communities</li>
-            <li>Notifications</li>
-            <li>Deadlines</li>
-            <li>Activity</li>
+            <li onClick={() => navigate('/recent-hackathons')}>Recent Hackathons</li>
+            <li onClick={() => navigate('/communities')}>Communities</li>
+            <li onClick={() => navigate('/notifications')}>Notifications</li>
+            <li onClick={() => navigate('/deadlines')}>Deadlines</li>
+            <li onClick={() => navigate('/activity')}>Activity</li>
           </ul>
         </nav>
       </aside>
@@ -88,11 +88,10 @@ export default function Dashboard() {
             {!sidebarOpen && (
               <button className="appbar-toggle" onClick={() => setSidebarOpen(true)} aria-label="Open sidebar">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 6L15 12L9 18" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9 6L15 12L9 18" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
             )}
-            <span className="appbar-title">HACKER.DEV</span>
           </div>
           <input className="appbar-search" placeholder="Search" />
           <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
