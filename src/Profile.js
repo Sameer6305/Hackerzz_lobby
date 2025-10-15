@@ -20,55 +20,8 @@ export default function Profile() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Sample data for charts
-  const domainData = [
-    { name: 'Web Development', value: 35, color: '#667eea' },
-    { name: 'AI/ML', value: 25, color: '#764ba2' },
-    { name: 'Mobile Apps', value: 20, color: '#f093fb' },
-    { name: 'Blockchain', value: 12, color: '#4facfe' },
-    { name: 'IoT', value: 8, color: '#43e97b' },
-  ];
-
-  const languageData = [
-    { name: 'JavaScript', value: 40, color: '#f7df1e' },
-    { name: 'Python', value: 30, color: '#3776ab' },
-    { name: 'Java', value: 15, color: '#007396' },
-    { name: 'C++', value: 10, color: '#00599c' },
-    { name: 'Go', value: 5, color: '#00add8' },
-  ];
-
-  // Calculate pie chart paths
-  const createPieChart = (data) => {
-    let currentAngle = 0;
-    const total = data.reduce((sum, item) => sum + item.value, 0);
-    
-    return data.map((item) => {
-      const percentage = (item.value / total) * 100;
-      const angle = (percentage / 100) * 360;
-      const startAngle = currentAngle;
-      const endAngle = currentAngle + angle;
-      
-      currentAngle = endAngle;
-      
-      // Convert angles to radians and calculate path
-      const startRad = (startAngle - 90) * (Math.PI / 180);
-      const endRad = (endAngle - 90) * (Math.PI / 180);
-      
-      const x1 = 50 + 45 * Math.cos(startRad);
-      const y1 = 50 + 45 * Math.sin(startRad);
-      const x2 = 50 + 45 * Math.cos(endRad);
-      const y2 = 50 + 45 * Math.sin(endRad);
-      
-      const largeArc = angle > 180 ? 1 : 0;
-      
-      const path = `M 50 50 L ${x1} ${y1} A 45 45 0 ${largeArc} 1 ${x2} ${y2} Z`;
-      
-      return { ...item, path, percentage: percentage.toFixed(1) };
-    });
-  };
-
-  const domainChartData = createPieChart(domainData);
-  const languageChartData = createPieChart(languageData);
+  // For new users - set to true if user is new
+  const isNewUser = true;
 
   return (
     <div className={"dashboard-root" + (sidebarOpen ? "" : " sidebar-collapsed")}>
@@ -143,6 +96,7 @@ export default function Profile() {
 
         {/* Profile Content */}
         <div className="profile-container">
+          {/* Profile Header */}
           <div className="profile-header-section">
             <div className="profile-avatar-large">AT</div>
             <div className="profile-header-info">
@@ -159,32 +113,103 @@ export default function Profile() {
             </button>
           </div>
 
-          {/* Stats Grid */}
-          <div className="profile-stats-grid">
-            <div className="profile-stat-card">
-              <div className="profile-stat-icon">🏆</div>
-              <div className="profile-stat-value">1,250</div>
-              <div className="profile-stat-label">Total Points</div>
-            </div>
-            <div className="profile-stat-card">
-              <div className="profile-stat-icon">👥</div>
-              <div className="profile-stat-value">8</div>
-              <div className="profile-stat-label">Communities Joined</div>
-            </div>
-            <div className="profile-stat-card">
-              <div className="profile-stat-icon">🚀</div>
-              <div className="profile-stat-value">15</div>
-              <div className="profile-stat-label">Hackathons Participated</div>
-            </div>
-            <div className="profile-stat-card">
-              <div className="profile-stat-icon">🎯</div>
-              <div className="profile-stat-value">12</div>
-              <div className="profile-stat-label">Projects Completed</div>
-            </div>
-          </div>
+          {isNewUser ? (
+            /* New User Welcome Section */
+            <div className="profile-welcome-section">
+              <div className="profile-welcome-card">
+                <div className="profile-welcome-icon">👋</div>
+                <h2 className="profile-welcome-title">Welcome to Hackerzz Lobby!</h2>
+                <p className="profile-welcome-text">
+                  Get started by completing your profile and exploring communities. Join hackathons, collaborate on projects, and connect with developers worldwide!
+                </p>
+                <div className="profile-welcome-actions">
+                  <button className="profile-welcome-btn-primary" onClick={() => navigate('/edit-profile')}>
+                    Complete Your Profile
+                  </button>
+                  <button className="profile-welcome-btn-secondary" onClick={() => navigate('/communities')}>
+                    Browse Communities
+                  </button>
+                </div>
+              </div>
 
-          {/* Charts Section */}
-          <div className="profile-charts-section">
+              {/* Quick Stats - Empty State */}
+              <div className="profile-quick-stats">
+                <div className="profile-stat-card-empty">
+                  <div className="profile-stat-icon">🏆</div>
+                  <div className="profile-stat-value">0</div>
+                  <div className="profile-stat-label">Total Points</div>
+                  <p className="profile-stat-hint">Participate in hackathons to earn points</p>
+                </div>
+                <div className="profile-stat-card-empty">
+                  <div className="profile-stat-icon">👥</div>
+                  <div className="profile-stat-value">0</div>
+                  <div className="profile-stat-label">Communities</div>
+                  <p className="profile-stat-hint">Join communities to collaborate</p>
+                </div>
+                <div className="profile-stat-card-empty">
+                  <div className="profile-stat-icon">🚀</div>
+                  <div className="profile-stat-value">0</div>
+                  <div className="profile-stat-label">Hackathons</div>
+                  <p className="profile-stat-hint">Start your first hackathon journey</p>
+                </div>
+              </div>
+
+              {/* Getting Started Guide */}
+              <div className="profile-getting-started">
+                <h3 className="profile-section-title">Getting Started</h3>
+                <div className="profile-steps-grid">
+                  <div className="profile-step-card">
+                    <div className="profile-step-number">1</div>
+                    <h4 className="profile-step-title">Complete Your Profile</h4>
+                    <p className="profile-step-desc">Add your details, skills, and interests to help others connect with you.</p>
+                    <button className="profile-step-btn" onClick={() => navigate('/edit-profile')}>Start Now</button>
+                  </div>
+                  <div className="profile-step-card">
+                    <div className="profile-step-number">2</div>
+                    <h4 className="profile-step-title">Join Communities</h4>
+                    <p className="profile-step-desc">Discover and join communities that match your interests and expertise.</p>
+                    <button className="profile-step-btn" onClick={() => navigate('/communities')}>Explore</button>
+                  </div>
+                  <div className="profile-step-card">
+                    <div className="profile-step-number">3</div>
+                    <h4 className="profile-step-title">Participate in Hackathons</h4>
+                    <p className="profile-step-desc">Challenge yourself, learn new skills, and win exciting prizes!</p>
+                    <button className="profile-step-btn" onClick={() => navigate('/recent-hackathons')}>View Hackathons</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Existing User Stats */
+            <>
+              <div className="profile-stats-grid">
+                <div className="profile-stat-card">
+                  <div className="profile-stat-icon">🏆</div>
+                  <div className="profile-stat-value">1,250</div>
+                  <div className="profile-stat-label">Total Points</div>
+                </div>
+                <div className="profile-stat-card">
+                  <div className="profile-stat-icon">👥</div>
+                  <div className="profile-stat-value">8</div>
+                  <div className="profile-stat-label">Communities Joined</div>
+                </div>
+                <div className="profile-stat-card">
+                  <div className="profile-stat-icon">🚀</div>
+                  <div className="profile-stat-value">15</div>
+                  <div className="profile-stat-label">Hackathons Participated</div>
+                </div>
+                <div className="profile-stat-card">
+                  <div className="profile-stat-icon">🎯</div>
+                  <div className="profile-stat-value">12</div>
+                  <div className="profile-stat-label">Projects Completed</div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Charts Section - Hidden for new users */}
+          {!isNewUser && (
+            <div className="profile-charts-section">
             {/* Domain Chart */}
             <div className="profile-chart-card">
               <h3 className="profile-chart-title">Hackathon Domains</h3>
@@ -237,8 +262,10 @@ export default function Profile() {
               </div>
             </div>
           </div>
+          )}
 
-          {/* Points Breakdown */}
+          {/* Points Breakdown - Hidden for new users */}
+          {!isNewUser && (
           <div className="profile-points-section">
             <h3 className="profile-section-title">Points Breakdown</h3>
             <div className="profile-points-grid">
@@ -274,8 +301,10 @@ export default function Profile() {
               </div>
             </div>
           </div>
+          )}
 
-          {/* Recent Activity */}
+          {/* Recent Activity - Hidden for new users */}
+          {!isNewUser && (
           <div className="profile-activity-section">
             <h3 className="profile-section-title">Recent Activity</h3>
             <div className="profile-activity-list">
@@ -309,6 +338,7 @@ export default function Profile() {
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

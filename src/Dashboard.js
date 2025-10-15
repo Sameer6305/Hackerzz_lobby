@@ -97,54 +97,21 @@ export default function Dashboard() {
           <div className="dashboard-card stats-card">
             <div className="stats-header">
               <button className="stats-btn stats-btn-primary" onClick={() => navigate('/community-create')}>Create New Community</button>
-              <button className="stats-btn" onClick={() => navigate('/activity')}>Connect Apps</button>
+              <button className="stats-btn" onClick={() => navigate('/activity')}>Find Jobs</button>
             </div>
             <div className="stats-body">
-              <div className="stats-item">
-                <span className="stats-icon">🏆</span>
-                <span>3 Active Communities</span>
-              </div>
-              <div className="stats-item">
-                <span className="stats-icon">🚀</span>
-                <span>Top 5% Community Contributor</span>
-                <span className="stats-badge-active">Active</span>
+              <div className="stats-empty-state">
+                <span className="stats-empty-icon">📊</span>
+                <p className="stats-empty-text">No activity yet. Start by joining a community or participating in a hackathon!</p>
               </div>
             </div>
           </div>
           <div className="dashboard-card projects-card">
             <div className="projects-header">My Projects</div>
-            <div className="projects-list">
-              <div className="project-item">
-                <img src={logoImg} alt="React Learners" className="project-avatar" />
-                <div>
-                  <div className="project-title">React Learners Priority</div>
-                  <div className="project-desc">X03 0900</div>
-                </div>
-                <button className="project-btn-primary">Create new prject</button>
-              </div>
-              <div className="project-item">
-                <img src={logoImg} alt="React Lesmers" className="project-avatar" />
-                <div>
-                  <div className="project-title">React Lesmers Priority</div>
-                  <div className="project-desc">103 9000</div>
-                </div>
-                <span className="project-status soon">Soon</span>
-              </div>
-              <div className="project-item">
-                <img src={logoImg} alt="AI Imnevate" className="project-avatar" />
-                <div>
-                  <div className="project-title">AI Imnevate</div>
-                  <div className="project-desc">103.19.06</div>
-                </div>
-              </div>
-              <div className="project-item">
-                <img src={logoImg} alt="Web Wicard" className="project-avatar" />
-                <div>
-                  <div className="project-title">Web Wicard</div>
-                  <div className="project-desc">193.39.06</div>
-                </div>
-                <span className="project-status live">Live</span>
-              </div>
+            <div className="projects-empty-state">
+              <span className="projects-empty-icon">📁</span>
+              <p className="projects-empty-text">No projects yet</p>
+              <button className="project-btn-primary" onClick={() => navigate('/communities')}>Start Your First Project</button>
             </div>
           </div>
           <div className="dashboard-card hackathons-card">
@@ -171,58 +138,29 @@ export default function Dashboard() {
           {/* Row 2 */}
           <div className="dashboard-card communities-card">
             <div className="communities-header">Your Communities</div>
-            <div className="communities-list">
-              <div className="community-item">
-                <div className="community-title">Reeet Ecore Penewitt</div>
-                <div className="community-desc">601.19.90</div>
-              </div>
-              <div className="community-item">
-                <div className="community-title">Alos Riewe Ewmetol</div>
-                <div className="community-desc">601.19.90</div>
-              </div>
-              <div className="community-item">
-                <div className="community-title">Plown/nitte 9 etesert</div>
-                <div className="community-desc">601.19.90</div>
-              </div>
+            <div className="communities-empty-state">
+              <span className="communities-empty-icon">👥</span>
+              <p className="communities-empty-text">You haven't joined any communities yet</p>
+              <button className="community-btn-join" onClick={() => navigate('/communities')}>Browse Communities</button>
             </div>
           </div>
-          <div className="dashboard-card activity-card">
-            <div className="activity-header">Recent Activity</div>
-            <div className="activity-list">
-              <div className="activity-item">
-                <div className="activity-title">Global Code Jam 2024</div>
-                <div className="activity-date">10.3.040</div>
-                <span className="activity-status">Entrance Instance</span>
+          <div className="dashboard-card deadlines-card">
+            <div className="deadlines-header">Deadlines Nearby</div>
+            <div className="deadlines-list">
+              <div className="deadline-item">
+                <div className="deadline-title">Global Code Jam Registration</div>
+                <div className="deadline-date">Nov 15, 2025</div>
+                <span className="deadline-status urgent">2 days left</span>
               </div>
-              <div className="activity-item">
-                <div className="activity-title">Global Code Jam 2024</div>
-                <div className="activity-date">161.142.010.1D0E</div>
-                <span className="activity-status">Activity</span>
+              <div className="deadline-item">
+                <div className="deadline-title">AI Hackathon Submission</div>
+                <div className="deadline-date">Nov 20, 2025</div>
+                <span className="deadline-status warning">7 days left</span>
               </div>
-              <div className="activity-item">
-                <div className="activity-title">Web Wizard Challenge</div>
-                <div className="activity-date">QX 10.3.063</div>
-                <span className="activity-status">Versions</span>
-              </div>
-            </div>
-          </div>
-          <div className="dashboard-card hackathons-card">
-            <div className="hackathons-header">Latest Hackathons</div>
-            <div className="hackathons-list">
-              <div className="hackathon-item">
-                <div className="hackathon-title">Global Code Jam 2024</div>
-                <div className="hackathon-date">Oct 19, 2024</div>
-                <span className="hackathon-status open">Registration Spots</span>
-              </div>
-              <div className="hackathon-item">
-                <div className="hackathon-title">AI Innovate Sprint</div>
-                <div className="hackathon-date">Oct 13, 3005</div>
-                <span className="hackathon-status upcoming">Upcoming</span>
-              </div>
-              <div className="hackathon-item">
-                <div className="hackathon-title">Web Wicard Challenge</div>
-                <div className="hackathon-date">Oct 26, 2633</div>
-                <span className="hackathon-status open">Registration Open</span>
+              <div className="deadline-item">
+                <div className="deadline-title">Web Dev Sprint Finals</div>
+                <div className="deadline-date">Nov 25, 2025</div>
+                <span className="deadline-status normal">12 days left</span>
               </div>
             </div>
           </div>

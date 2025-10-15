@@ -81,11 +81,11 @@ export default function Communities() {
               AT
             </div>
             {menuOpen && (
-              <div className="appbar-dropdown-menu">
-                <div className="dropdown-item" onClick={() => navigate('/profile')}>Profile</div>
-                <div className="dropdown-item">Settings</div>
-                <div className="dropdown-divider"></div>
-                <div className="dropdown-item">Sign Out</div>
+              <div className="appbar-user-dropdown">
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
+                <button className="appbar-user-dropdown-item">Settings</button>
+                <div className="appbar-user-dropdown-divider" />
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
               </div>
             )}
           </div>
