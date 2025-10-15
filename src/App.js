@@ -1,26 +1,21 @@
-
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import './App.css';
-
 import homeImage from './Img/home-image.png';
 import aboutImage from './Img/about-image.png';
-
-
 import SignIn from './SignIn';
 import Register from './Register';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
+import EditProfile from './EditProfile';
 import CommunityCreate from './CommunityCreate';
 import RecentHackathons from './RecentHackathons';
 import Communities from './Communities';
 import Notifications from './Notifications';
 import Deadlines from './Deadlines';
 import Activity from './Activity';
-
-
+import DashboardAppbar from './DashboardAppbar';
 
 function MainContent() {
   return (
@@ -154,12 +149,11 @@ function MainContent() {
   );
 }
 
-import DashboardAppbar from './DashboardAppbar';
-
 function App() {
   const location = useLocation();
   const isDashboard = location.pathname === '/dashboard';
   const isProfile = location.pathname === '/profile';
+  const isEditProfile = location.pathname === '/edit-profile';
   const isCommunityCreate = location.pathname === '/community-create';
   const isRecentHackathons = location.pathname === '/recent-hackathons';
   const isCommunities = location.pathname === '/communities';
@@ -168,14 +162,15 @@ function App() {
   const isActivity = location.pathname === '/activity';
   return (
     <>
-      {!isDashboard && !isProfile && !isCommunityCreate && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
-      {(isProfile || isCommunityCreate) && <DashboardAppbar />}
+      {!isDashboard && !isProfile && !isEditProfile && !isCommunityCreate && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
+      {isCommunityCreate && <DashboardAppbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/community-create" element={<CommunityCreate />} />
         <Route path="/recent-hackathons" element={<RecentHackathons />} />
         <Route path="/communities" element={<Communities />} />

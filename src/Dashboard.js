@@ -20,35 +20,6 @@ export default function Dashboard() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  function handleFormChange(e) {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  }
-
-  function handleFormSubmit(e) {
-    e.preventDefault();
-    // Basic validation
-    if (!form.communityName || !form.hackathonName || !form.projectDomain || !form.projectName) {
-      setFormError('Please fill all required fields.');
-      return;
-    }
-    setFormError('');
-    // Here you would send form data to backend or update state
-    alert('Community Created!');
-    setShowCommunityForm(false);
-    setForm({
-      communityName: '',
-      hackathonName: '',
-      teamMembers: '',
-      hackathonUrl: '',
-      communityGuidelines: '',
-      projectDomain: '',
-      projectName: '',
-      description: '',
-      contactEmail: '',
-    });
-  }
-
   return (
     <div className={"dashboard-root" + (sidebarOpen ? "" : " sidebar-collapsed")}>
       {/* Sidebar */}
@@ -126,8 +97,7 @@ export default function Dashboard() {
           <div className="dashboard-card stats-card">
             <div className="stats-header">
               <button className="stats-btn stats-btn-primary" onClick={() => navigate('/community-create')}>Create New Community</button>
-              <button className="stats-btn">View Profile</button>
-              <button className="stats-btn">Connect Apps</button>
+              <button className="stats-btn" onClick={() => navigate('/activity')}>Connect Apps</button>
             </div>
             <div className="stats-body">
               <div className="stats-item">
