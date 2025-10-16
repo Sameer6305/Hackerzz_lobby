@@ -2,12 +2,31 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
+import { getUserProfile, getUserInitials } from './utils/profileUtils';
 
 export default function Communities() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [communities, setCommunities] = useState([]);
+  const [userProfile, setUserProfile] = useState(getUserProfile());
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = (event) => {
+      setUserProfile(event.detail);
+    };
+    
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+  }, []);
+
+  // Load communities from localStorage
+  useEffect(() => {
+    const storedCommunities = JSON.parse(localStorage.getItem('communities') || '[]');
+    setCommunities(storedCommunities);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -27,7 +46,7 @@ export default function Communities() {
         <div className="sidebar-profile">
           <img src={logoImg} alt="Logo" className="sidebar-logo" />
           <div className="sidebar-user-info">
-            <div className="sidebar-user-name">Ales Turner</div>
+            <div className="sidebar-user-name">{userProfile.name}</div>
             <div className="sidebar-user-role">Student</div>
             <div className="sidebar-user-status">Active</div>
           </div>
@@ -68,7 +87,7 @@ export default function Communities() {
           <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
             <div className="appbar-user-info">
-              <div className="appbar-user-name">Ales Turner</div>
+              <div className="appbar-user-name">{userProfile.name}</div>
             </div>
             <div
               className="appbar-user-avatar"
@@ -78,7 +97,7 @@ export default function Communities() {
               aria-haspopup="true"
               aria-expanded={menuOpen}
             >
-              AT
+              {getUserInitials(userProfile.name)}
             </div>
             {menuOpen && (
               <div className="appbar-user-dropdown">
@@ -94,7 +113,7 @@ export default function Communities() {
         {/* Communities Content */}
         <div className="communities-content">
           <div className="communities-header">
-            <h1 className="communities-title">Ales Turner's Communities</h1>
+            <h1 className="communities-title">{userProfile.name}'s Communities</h1>
             <button className="create-community-btn" onClick={() => navigate('/community-create')}>
               + Create Community
             </button>
@@ -187,14 +206,37 @@ export default function Communities() {
             {/* Your Communities Section */}
             <section className="communities-section your-communities-section">
               <h2 className="section-title">Your Communities</h2>
-              <div className="empty-state">
-                <div className="empty-state-icon">🏘️</div>
-                <h3 className="empty-state-title">No communities joined yet</h3>
-                <p className="empty-state-text">Join a community above or create your own to get started!</p>
-                <button className="empty-state-btn" onClick={() => navigate('/community-create')}>
-                  Create Your First Community
-                </button>
-              </div>
+              {communities.length === 0 ? (
+                <div className="empty-state">
+                  <div className="empty-state-icon">🏘️</div>
+                  <h3 className="empty-state-title">No communities joined yet</h3>
+                  <p className="empty-state-text">Join a community above or create your own to get started!</p>
+                  <button className="empty-state-btn" onClick={() => navigate('/community-create')}>
+                    Create Your First Community
+                  </button>
+                </div>
+              ) : (
+                <div className="communities-grid">
+                  {communities.map((community) => (
+                    <div key={community.id} className="community-card user-community-card">
+                      <div className="community-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                        {community.projectDomain.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="community-info">
+                        <h3 className="community-name">{community.communityName}</h3>
+                        <p className="community-description">{community.description || community.projectName}</p>
+                        <div className="community-meta">
+                          <span className="community-meta-item">🎯 {community.projectDomain}</span>
+                          <span className="community-meta-item">👥 {community.members.length || community.numberOfMembers || 0} members</span>
+                        </div>
+                      </div>
+                      <button className="enter-community-btn" onClick={() => navigate(`/community/${community.id}`)}>
+                        Enter Community →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </section>
           </div>
         </div>

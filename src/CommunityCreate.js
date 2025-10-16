@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
+import { getUserProfile } from './utils/profileUtils';
 
 export default function CommunityCreate() {
+  const userProfile = getUserProfile();
+  
   const [form, setForm] = useState({
     communityName: '',
     hackathonName: '',
@@ -13,7 +16,7 @@ export default function CommunityCreate() {
     projectDomain: '',
     projectName: '',
     description: '',
-    contactEmail: '',
+    contactEmail: userProfile.email || '',
   });
   const [formError, setFormError] = useState('');
   const navigate = useNavigate();
@@ -30,8 +33,28 @@ export default function CommunityCreate() {
       return;
     }
     setFormError('');
-    alert('Community Created!');
-    navigate('/dashboard');
+    
+    // Create community object with unique ID and timestamp
+    const newCommunity = {
+      id: Date.now().toString(),
+      ...form,
+      createdAt: new Date().toISOString(),
+      members: form.teamMembers ? form.teamMembers.split(',').map(m => m.trim()).filter(m => m) : [],
+      messages: [],
+      deadlines: [],
+    };
+    
+    // Get existing communities from localStorage
+    const existingCommunities = JSON.parse(localStorage.getItem('communities') || '[]');
+    
+    // Add new community
+    existingCommunities.push(newCommunity);
+    
+    // Save to localStorage
+    localStorage.setItem('communities', JSON.stringify(existingCommunities));
+    
+    alert('Community Created Successfully!');
+    navigate('/communities');
   }
 
   return (

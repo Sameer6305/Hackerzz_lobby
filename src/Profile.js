@@ -2,12 +2,40 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
+import { getUserProfile, getUserInitials, isProfileComplete } from './utils/profileUtils';
 
 export default function Profile() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [userProfile, setUserProfile] = useState(getUserProfile());
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Sample chart data for domains
+  const domainChartData = [
+    { name: 'Web Dev', percentage: 35, color: '#4F46E5', path: 'M 50 50 L 50 0 A 50 50 0 0 1 85.36 14.64 Z' },
+    { name: 'AI/ML', percentage: 25, color: '#10B981', path: 'M 50 50 L 85.36 14.64 A 50 50 0 0 1 85.36 85.36 Z' },
+    { name: 'Blockchain', percentage: 20, color: '#F59E0B', path: 'M 50 50 L 85.36 85.36 A 50 50 0 0 1 14.64 85.36 Z' },
+    { name: 'IoT', percentage: 20, color: '#EF4444', path: 'M 50 50 L 14.64 85.36 A 50 50 0 0 1 50 0 Z' }
+  ];
+
+  // Sample chart data for languages
+  const languageChartData = [
+    { name: 'JavaScript', percentage: 40, color: '#F7DF1E', path: 'M 50 50 L 50 0 A 50 50 0 0 1 97.55 29.39 Z' },
+    { name: 'Python', percentage: 30, color: '#3776AB', path: 'M 50 50 L 97.55 29.39 A 50 50 0 0 1 70.71 79.29 Z' },
+    { name: 'Java', percentage: 20, color: '#007396', path: 'M 50 50 L 70.71 79.29 A 50 50 0 0 1 2.45 29.39 Z' },
+    { name: 'C++', percentage: 10, color: '#00599C', path: 'M 50 50 L 2.45 29.39 A 50 50 0 0 1 50 0 Z' }
+  ];
+
+  // Listen for profile updates
+  React.useEffect(() => {
+    const handleProfileUpdate = (event) => {
+      setUserProfile(event.detail);
+    };
+    
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+  }, []);
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -20,8 +48,8 @@ export default function Profile() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // For new users - set to true if user is new
-  const isNewUser = true;
+  // For new users - check if profile is complete
+  const isNewUser = !isProfileComplete();
 
   return (
     <div className={"dashboard-root" + (sidebarOpen ? "" : " sidebar-collapsed")}>
@@ -30,7 +58,7 @@ export default function Profile() {
         <div className="sidebar-profile">
           <img src={logoImg} alt="Logo" className="sidebar-logo" />
           <div className="sidebar-user-info">
-            <div className="sidebar-user-name">Alex Turner</div>
+            <div className="sidebar-user-name">{userProfile.name}</div>
             <div className="sidebar-user-role">Student</div>
             <div className="sidebar-user-status">Active</div>
           </div>
@@ -71,7 +99,7 @@ export default function Profile() {
           <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
             <div className="appbar-user-info">
-              <div className="appbar-user-name">Alex Turner</div>
+              <div className="appbar-user-name">{userProfile.name}</div>
             </div>
             <div
               className="appbar-user-avatar"
@@ -81,7 +109,7 @@ export default function Profile() {
               aria-haspopup="true"
               aria-expanded={menuOpen}
             >
-              AT
+              {getUserInitials(userProfile.name)}
             </div>
             {menuOpen && (
               <div className="appbar-user-dropdown">
@@ -98,10 +126,10 @@ export default function Profile() {
         <div className="profile-container">
           {/* Profile Header */}
           <div className="profile-header-section">
-            <div className="profile-avatar-large">AT</div>
+            <div className="profile-avatar-large">{getUserInitials(userProfile.name)}</div>
             <div className="profile-header-info">
-              <h1 className="profile-name">Alex Turner</h1>
-              <p className="profile-email">alex.turner@email.com</p>
+              <h1 className="profile-name">{userProfile.name}</h1>
+              <p className="profile-email">{userProfile.email}</p>
               <p className="profile-member-since">Member since October 2024</p>
             </div>
             <button className="profile-edit-btn" onClick={() => navigate('/edit-profile')}>

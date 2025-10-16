@@ -10,6 +10,7 @@ import Dashboard from './Dashboard';
 import Profile from './Profile';
 import EditProfile from './EditProfile';
 import CommunityCreate from './CommunityCreate';
+import CommunityPage from './CommunityPage';
 import RecentHackathons from './RecentHackathons';
 import Communities from './Communities';
 import Notifications from './Notifications';
@@ -172,6 +173,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/community-create" element={<CommunityCreate />} />
+        <Route path="/community/:communityId" element={<CommunityPage />} />
         <Route path="/recent-hackathons" element={<RecentHackathons />} />
         <Route path="/communities" element={<Communities />} />
         <Route path="/notifications" element={<Notifications />} />

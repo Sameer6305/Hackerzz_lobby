@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
+import { getUserProfile, getUserInitials } from './utils/profileUtils';
 
 // Real tech news data
 const techNewsData = [
@@ -90,8 +91,18 @@ const techNewsData = [
 export default function Notifications() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [userProfile, setUserProfile] = useState(getUserProfile());
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setUserProfile(getUserProfile());
+    };
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -111,7 +122,7 @@ export default function Notifications() {
         <div className="sidebar-profile">
           <img src={logoImg} alt="Logo" className="sidebar-logo" />
           <div className="sidebar-user-info">
-            <div className="sidebar-user-name">Ales Turner</div>
+            <div className="sidebar-user-name">{userProfile.name}</div>
             <div className="sidebar-user-role">Student</div>
             <div className="sidebar-user-status">Active</div>
           </div>
@@ -152,7 +163,7 @@ export default function Notifications() {
           <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
             <div className="appbar-user-info">
-              <div className="appbar-user-name">Ales Turner</div>
+              <div className="appbar-user-name">{userProfile.name}</div>
             </div>
             <div
               className="appbar-user-avatar"
@@ -162,7 +173,7 @@ export default function Notifications() {
               aria-haspopup="true"
               aria-expanded={menuOpen}
             >
-              AT
+              {getUserInitials(userProfile.name)}
             </div>
             {menuOpen && (
               <div className="appbar-user-dropdown">

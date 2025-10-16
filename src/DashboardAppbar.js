@@ -1,11 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getUserProfile, getUserInitials } from './utils/profileUtils';
 
 export default function DashboardAppbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState(getUserProfile());
   const menuRef = useRef(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setUserProfile(getUserProfile());
+    };
+    window.addEventListener('profileUpdated', handleProfileUpdate);
+    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+  }, []);
 
   React.useEffect(() => {
     function handleClickOutside(event) {
@@ -34,7 +45,7 @@ export default function DashboardAppbar() {
       <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
         <div className="appbar-user-info">
-          <div className="appbar-user-name">Ales Turner</div>
+          <div className="appbar-user-name">{userProfile.name}</div>
         </div>
         <div
           className="appbar-user-avatar"
@@ -44,7 +55,7 @@ export default function DashboardAppbar() {
           aria-haspopup="true"
           aria-expanded={menuOpen}
         >
-          AT
+          {getUserInitials(userProfile.name)}
         </div>
         {menuOpen && (
           <div className="appbar-user-dropdown" ref={dropdownRef}>

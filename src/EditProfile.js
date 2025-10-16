@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
+import { getUserProfile, saveUserProfile, getUserInitials } from './utils/profileUtils';
 
 const BRANCHES = [
   'Computer Science',
@@ -66,6 +67,12 @@ export default function EditProfile() {
     interests: [],
   });
 
+  // Load existing profile data on mount
+  React.useEffect(() => {
+    const profileData = getUserProfile();
+    setForm(profileData);
+  }, []);
+
   // Close dropdown when clicking outside
   React.useEffect(() => {
     function handleClickOutside(event) {
@@ -102,9 +109,13 @@ export default function EditProfile() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    localStorage.setItem('profileData', JSON.stringify(form));
-    alert('Profile updated successfully!');
-    navigate('/profile');
+    const success = saveUserProfile(form);
+    if (success) {
+      alert('Profile updated successfully!');
+      navigate('/profile');
+    } else {
+      alert('Error saving profile. Please try again.');
+    }
   }
 
   return (
@@ -114,7 +125,7 @@ export default function EditProfile() {
         <div className="sidebar-profile">
           <img src={logoImg} alt="Logo" className="sidebar-logo" />
           <div className="sidebar-user-info">
-            <div className="sidebar-user-name">Alex Turner</div>
+            <div className="sidebar-user-name">{form.name || 'Alex Turner'}</div>
             <div className="sidebar-user-role">Student</div>
             <div className="sidebar-user-status">Active</div>
           </div>
@@ -155,7 +166,7 @@ export default function EditProfile() {
           <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span className="appbar-bell" style={{ color: '#181c23', fontSize: '1.3rem', margin: '0 6px 0 0' }}>🔔</span>
             <div className="appbar-user-info">
-              <div className="appbar-user-name">Alex Turner</div>
+              <div className="appbar-user-name">{form.name || 'Alex Turner'}</div>
             </div>
             <div
               className="appbar-user-avatar"
@@ -165,7 +176,7 @@ export default function EditProfile() {
               aria-haspopup="true"
               aria-expanded={menuOpen}
             >
-              AT
+              {getUserInitials(form.name)}
             </div>
             {menuOpen && (
               <div className="appbar-user-dropdown">

@@ -1,14 +1,28 @@
 import React from 'react';
 import './Navbar.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === '/') {
+      // Already on landing page, just scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Navigate to landing page
+      navigate('/');
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
   <div className="navbar-logo">Hackerzz Lobby</div>
         <ul className="navbar-links">
-          <li><Link to="/">Home</Link></li>
+          <li><a href="/" onClick={handleHomeClick}>Home</a></li>
           <li><a href="#about">About</a></li>
           <li><a href="#features">Features</a></li>
           <li><a href="#contact">Contact</a></li>
