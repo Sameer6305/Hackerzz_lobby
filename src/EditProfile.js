@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, saveUserProfile, getUserInitials } from './utils/profileUtils';
+import { signOutUser } from './utils/authUtils';
 
 const BRANCHES = [
   'Computer Science',
@@ -46,6 +47,14 @@ export default function EditProfile() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   const [form, setForm] = useState({
     name: '',
@@ -181,9 +190,9 @@ export default function EditProfile() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>

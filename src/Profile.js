@@ -3,38 +3,49 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials, isProfileComplete } from './utils/profileUtils';
+import { signOutUser } from './utils/authUtils';
+import { getUserActivityStats, getDomainChartData, getLanguageChartData, getPointsBreakdown, getRecentActivity, formatRelativeTime } from './utils/userDataUtils';
 
 export default function Profile() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userProfile, setUserProfile] = useState(getUserProfile());
+  const [activityStats, setActivityStats] = useState(getUserActivityStats());
+  const [domainChartData, setDomainChartData] = useState(getDomainChartData());
+  const [languageChartData, setLanguageChartData] = useState(getLanguageChartData());
+  const [pointsBreakdown, setPointsBreakdown] = useState(getPointsBreakdown());
+  const [recentActivity, setRecentActivity] = useState(getRecentActivity());
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  // Sample chart data for domains
-  const domainChartData = [
-    { name: 'Web Dev', percentage: 35, color: '#4F46E5', path: 'M 50 50 L 50 0 A 50 50 0 0 1 85.36 14.64 Z' },
-    { name: 'AI/ML', percentage: 25, color: '#10B981', path: 'M 50 50 L 85.36 14.64 A 50 50 0 0 1 85.36 85.36 Z' },
-    { name: 'Blockchain', percentage: 20, color: '#F59E0B', path: 'M 50 50 L 85.36 85.36 A 50 50 0 0 1 14.64 85.36 Z' },
-    { name: 'IoT', percentage: 20, color: '#EF4444', path: 'M 50 50 L 14.64 85.36 A 50 50 0 0 1 50 0 Z' }
-  ];
-
-  // Sample chart data for languages
-  const languageChartData = [
-    { name: 'JavaScript', percentage: 40, color: '#F7DF1E', path: 'M 50 50 L 50 0 A 50 50 0 0 1 97.55 29.39 Z' },
-    { name: 'Python', percentage: 30, color: '#3776AB', path: 'M 50 50 L 97.55 29.39 A 50 50 0 0 1 70.71 79.29 Z' },
-    { name: 'Java', percentage: 20, color: '#007396', path: 'M 50 50 L 70.71 79.29 A 50 50 0 0 1 2.45 29.39 Z' },
-    { name: 'C++', percentage: 10, color: '#00599C', path: 'M 50 50 L 2.45 29.39 A 50 50 0 0 1 50 0 Z' }
-  ];
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   React.useEffect(() => {
-    const handleProfileUpdate = (event) => {
-      setUserProfile(event.detail);
+    const handleProfileUpdate = () => {
+      setUserProfile(getUserProfile());
+      setLanguageChartData(getLanguageChartData()); // Update language chart when profile changes
+    };
+
+    const handleUserDataUpdate = () => {
+      setActivityStats(getUserActivityStats());
+      setDomainChartData(getDomainChartData()); // Update domain chart when communities change
+      setPointsBreakdown(getPointsBreakdown()); // Update points when activities change
+      setRecentActivity(getRecentActivity()); // Update recent activity when user performs actions
     };
     
     window.addEventListener('profileUpdated', handleProfileUpdate);
-    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+    window.addEventListener('userDataUpdated', handleUserDataUpdate);
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      window.removeEventListener('userDataUpdated', handleUserDataUpdate);
+    };
   }, []);
 
   // Close dropdown when clicking outside
@@ -114,9 +125,9 @@ export default function Profile() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>
@@ -164,19 +175,19 @@ export default function Profile() {
               <div className="profile-quick-stats">
                 <div className="profile-stat-card-empty">
                   <div className="profile-stat-icon">🏆</div>
-                  <div className="profile-stat-value">0</div>
+                  <div className="profile-stat-value">{activityStats.contributions}</div>
                   <div className="profile-stat-label">Total Points</div>
                   <p className="profile-stat-hint">Participate in hackathons to earn points</p>
                 </div>
                 <div className="profile-stat-card-empty">
                   <div className="profile-stat-icon">👥</div>
-                  <div className="profile-stat-value">0</div>
+                  <div className="profile-stat-value">{activityStats.communitiesJoined}</div>
                   <div className="profile-stat-label">Communities</div>
                   <p className="profile-stat-hint">Join communities to collaborate</p>
                 </div>
                 <div className="profile-stat-card-empty">
                   <div className="profile-stat-icon">🚀</div>
-                  <div className="profile-stat-value">0</div>
+                  <div className="profile-stat-value">{activityStats.hackathonsParticipated}</div>
                   <div className="profile-stat-label">Hackathons</div>
                   <p className="profile-stat-hint">Start your first hackathon journey</p>
                 </div>
@@ -213,22 +224,22 @@ export default function Profile() {
               <div className="profile-stats-grid">
                 <div className="profile-stat-card">
                   <div className="profile-stat-icon">🏆</div>
-                  <div className="profile-stat-value">1,250</div>
+                  <div className="profile-stat-value">{activityStats.contributions}</div>
                   <div className="profile-stat-label">Total Points</div>
                 </div>
                 <div className="profile-stat-card">
                   <div className="profile-stat-icon">👥</div>
-                  <div className="profile-stat-value">8</div>
+                  <div className="profile-stat-value">{activityStats.communitiesJoined}</div>
                   <div className="profile-stat-label">Communities Joined</div>
                 </div>
                 <div className="profile-stat-card">
                   <div className="profile-stat-icon">🚀</div>
-                  <div className="profile-stat-value">15</div>
+                  <div className="profile-stat-value">{activityStats.hackathonsParticipated}</div>
                   <div className="profile-stat-label">Hackathons Participated</div>
                 </div>
                 <div className="profile-stat-card">
                   <div className="profile-stat-icon">🎯</div>
-                  <div className="profile-stat-value">12</div>
+                  <div className="profile-stat-value">{activityStats.projectsCreated}</div>
                   <div className="profile-stat-label">Projects Completed</div>
                 </div>
               </div>
@@ -242,25 +253,34 @@ export default function Profile() {
             <div className="profile-chart-card">
               <h3 className="profile-chart-title">Hackathon Domains</h3>
               <div className="profile-chart-container">
-                <svg viewBox="0 0 100 100" className="profile-pie-chart">
-                  {domainChartData.map((item, index) => (
-                    <path
-                      key={index}
-                      d={item.path}
-                      fill={item.color}
-                      className="profile-pie-slice"
-                    />
-                  ))}
-                </svg>
-                <div className="profile-chart-legend">
-                  {domainChartData.map((item, index) => (
-                    <div key={index} className="profile-legend-item">
-                      <div className="profile-legend-color" style={{ backgroundColor: item.color }}></div>
-                      <span className="profile-legend-text">{item.name}</span>
-                      <span className="profile-legend-value">{item.percentage}%</span>
+                {domainChartData.length > 0 ? (
+                  <>
+                    <svg viewBox="0 0 100 100" className="profile-pie-chart">
+                      {domainChartData.map((item, index) => (
+                        <path
+                          key={index}
+                          d={item.path}
+                          fill={item.color}
+                          className="profile-pie-slice"
+                        />
+                      ))}
+                    </svg>
+                    <div className="profile-chart-legend">
+                      {domainChartData.map((item, index) => (
+                        <div key={index} className="profile-legend-item">
+                          <div className="profile-legend-color" style={{ backgroundColor: item.color }}></div>
+                          <span className="profile-legend-text">{item.name}</span>
+                          <span className="profile-legend-value">{item.percentage}%</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </>
+                ) : (
+                  <div className="profile-chart-empty">
+                    <span className="profile-chart-empty-icon">📊</span>
+                    <p className="profile-chart-empty-text">Join communities to see your domain distribution</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -268,65 +288,86 @@ export default function Profile() {
             <div className="profile-chart-card">
               <h3 className="profile-chart-title">Programming Languages</h3>
               <div className="profile-chart-container">
-                <svg viewBox="0 0 100 100" className="profile-pie-chart">
-                  {languageChartData.map((item, index) => (
-                    <path
-                      key={index}
-                      d={item.path}
-                      fill={item.color}
-                      className="profile-pie-slice"
-                    />
-                  ))}
-                </svg>
-                <div className="profile-chart-legend">
-                  {languageChartData.map((item, index) => (
-                    <div key={index} className="profile-legend-item">
-                      <div className="profile-legend-color" style={{ backgroundColor: item.color }}></div>
-                      <span className="profile-legend-text">{item.name}</span>
-                      <span className="profile-legend-value">{item.percentage}%</span>
+                {languageChartData.length > 0 ? (
+                  <>
+                    <svg viewBox="0 0 100 100" className="profile-pie-chart">
+                      {languageChartData.map((item, index) => (
+                        <path
+                          key={index}
+                          d={item.path}
+                          fill={item.color}
+                          className="profile-pie-slice"
+                        />
+                      ))}
+                    </svg>
+                    <div className="profile-chart-legend">
+                      {languageChartData.map((item, index) => (
+                        <div key={index} className="profile-legend-item">
+                          <div className="profile-legend-color" style={{ backgroundColor: item.color }}></div>
+                          <span className="profile-legend-text">{item.name}</span>
+                          <span className="profile-legend-value">{item.percentage}%</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </>
+                ) : (
+                  <div className="profile-chart-empty">
+                    <span className="profile-chart-empty-icon">💻</span>
+                    <p className="profile-chart-empty-text">Add skills to your profile to see language distribution</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
           )}
 
           {/* Points Breakdown - Hidden for new users */}
-          {!isNewUser && (
+          {!isNewUser && pointsBreakdown.totalPoints > 0 && (
           <div className="profile-points-section">
             <h3 className="profile-section-title">Points Breakdown</h3>
             <div className="profile-points-grid">
               <div className="profile-points-item">
                 <div className="profile-points-item-header">
-                  <span className="profile-points-item-icon">🎯</span>
-                  <span className="profile-points-item-title">Hackathon Participation</span>
+                  <span className="profile-points-item-icon">{pointsBreakdown.hackathonParticipation.icon}</span>
+                  <span className="profile-points-item-title">{pointsBreakdown.hackathonParticipation.label}</span>
                 </div>
                 <div className="profile-points-bar">
-                  <div className="profile-points-bar-fill" style={{ width: '75%', backgroundColor: '#667eea' }}></div>
+                  <div className="profile-points-bar-fill" style={{ width: `${pointsBreakdown.hackathonParticipation.percentage}%`, backgroundColor: '#667eea' }}></div>
                 </div>
-                <span className="profile-points-item-value">750 pts</span>
+                <span className="profile-points-item-value">{pointsBreakdown.hackathonParticipation.points} pts</span>
               </div>
               <div className="profile-points-item">
                 <div className="profile-points-item-header">
-                  <span className="profile-points-item-icon">💬</span>
-                  <span className="profile-points-item-title">Community Involvement</span>
+                  <span className="profile-points-item-icon">{pointsBreakdown.communityInvolvement.icon}</span>
+                  <span className="profile-points-item-title">{pointsBreakdown.communityInvolvement.label}</span>
                 </div>
                 <div className="profile-points-bar">
-                  <div className="profile-points-bar-fill" style={{ width: '60%', backgroundColor: '#764ba2' }}></div>
+                  <div className="profile-points-bar-fill" style={{ width: `${pointsBreakdown.communityInvolvement.percentage}%`, backgroundColor: '#764ba2' }}></div>
                 </div>
-                <span className="profile-points-item-value">300 pts</span>
+                <span className="profile-points-item-value">{pointsBreakdown.communityInvolvement.points} pts</span>
               </div>
               <div className="profile-points-item">
                 <div className="profile-points-item-header">
-                  <span className="profile-points-item-icon">✅</span>
-                  <span className="profile-points-item-title">Project Completion</span>
+                  <span className="profile-points-item-icon">{pointsBreakdown.projectCompletion.icon}</span>
+                  <span className="profile-points-item-title">{pointsBreakdown.projectCompletion.label}</span>
                 </div>
                 <div className="profile-points-bar">
-                  <div className="profile-points-bar-fill" style={{ width: '40%', backgroundColor: '#f093fb' }}></div>
+                  <div className="profile-points-bar-fill" style={{ width: `${pointsBreakdown.projectCompletion.percentage}%`, backgroundColor: '#f093fb' }}></div>
                 </div>
-                <span className="profile-points-item-value">200 pts</span>
+                <span className="profile-points-item-value">{pointsBreakdown.projectCompletion.points} pts</span>
               </div>
+              {pointsBreakdown.contributions.points > 0 && (
+                <div className="profile-points-item">
+                  <div className="profile-points-item-header">
+                    <span className="profile-points-item-icon">{pointsBreakdown.contributions.icon}</span>
+                    <span className="profile-points-item-title">{pointsBreakdown.contributions.label}</span>
+                  </div>
+                  <div className="profile-points-bar">
+                    <div className="profile-points-bar-fill" style={{ width: `${pointsBreakdown.contributions.percentage}%`, backgroundColor: '#fbbf24' }}></div>
+                  </div>
+                  <span className="profile-points-item-value">{pointsBreakdown.contributions.points} pts</span>
+                </div>
+              )}
             </div>
           </div>
           )}
@@ -336,34 +377,24 @@ export default function Profile() {
           <div className="profile-activity-section">
             <h3 className="profile-section-title">Recent Activity</h3>
             <div className="profile-activity-list">
-              <div className="profile-activity-item">
-                <div className="profile-activity-icon" style={{ backgroundColor: '#667eea' }}>🏆</div>
-                <div className="profile-activity-content">
-                  <p className="profile-activity-title">Won 2nd place in AI Hackathon 2025</p>
-                  <p className="profile-activity-time">2 days ago</p>
+              {recentActivity.length > 0 ? (
+                recentActivity.map((activity, index) => (
+                  <div key={index} className="profile-activity-item">
+                    <div className="profile-activity-icon" style={{ backgroundColor: activity.color }}>
+                      {activity.icon}
+                    </div>
+                    <div className="profile-activity-content">
+                      <p className="profile-activity-title">{activity.title}</p>
+                      <p className="profile-activity-time">{formatRelativeTime(activity.timestamp)}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="profile-empty-state">
+                  <p>No recent activities yet</p>
+                  <p className="profile-empty-state-subtitle">Join communities, participate in hackathons, or complete projects to see your activity here</p>
                 </div>
-              </div>
-              <div className="profile-activity-item">
-                <div className="profile-activity-icon" style={{ backgroundColor: '#764ba2' }}>👥</div>
-                <div className="profile-activity-content">
-                  <p className="profile-activity-title">Joined React Developers Community</p>
-                  <p className="profile-activity-time">5 days ago</p>
-                </div>
-              </div>
-              <div className="profile-activity-item">
-                <div className="profile-activity-icon" style={{ backgroundColor: '#f093fb' }}>📊</div>
-                <div className="profile-activity-content">
-                  <p className="profile-activity-title">Completed Web3 Project</p>
-                  <p className="profile-activity-time">1 week ago</p>
-                </div>
-              </div>
-              <div className="profile-activity-item">
-                <div className="profile-activity-icon" style={{ backgroundColor: '#4facfe' }}>🚀</div>
-                <div className="profile-activity-content">
-                  <p className="profile-activity-title">Participated in Global Code Jam</p>
-                  <p className="profile-activity-time">2 weeks ago</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
           )}

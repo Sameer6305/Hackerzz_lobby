@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import { signOutUser } from './utils/authUtils';
 
 export default function Deadlines() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -10,6 +11,14 @@ export default function Deadlines() {
   const [userProfile, setUserProfile] = useState(getUserProfile());
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   React.useEffect(() => {
@@ -42,13 +51,13 @@ export default function Deadlines() {
             <div className="sidebar-user-role">Student</div>
             <div className="sidebar-user-status">Active</div>
           </div>
-              {sidebarOpen && (
-                <button className="sidebar-toggle sidebar-toggle--sidebar" onClick={() => setSidebarOpen(false)} aria-label="Collapse sidebar">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              )}
+          {sidebarOpen && (
+            <button className="sidebar-toggle sidebar-toggle--sidebar" onClick={() => setSidebarOpen(false)} aria-label="Collapse sidebar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 18L9 12L15 6" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
         </div>
         <nav className="sidebar-nav">
           <ul>
@@ -94,9 +103,9 @@ export default function Deadlines() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 import { getUserProfile } from './utils/profileUtils';
+import { addProject, joinCommunity } from './utils/userDataUtils';
 
 export default function CommunityCreate() {
   const userProfile = getUserProfile();
@@ -53,7 +54,21 @@ export default function CommunityCreate() {
     // Save to localStorage
     localStorage.setItem('communities', JSON.stringify(existingCommunities));
     
-    alert('Community Created Successfully!');
+    // Add project to user's projects
+    addProject({
+      name: form.projectName,
+      description: form.description || `${form.projectDomain} project for ${form.hackathonName}`,
+      communityId: newCommunity.id,
+      communityName: form.communityName,
+      hackathonName: form.hackathonName,
+      projectDomain: form.projectDomain,
+      type: 'community-project'
+    });
+    
+    // Auto-join the community creator
+    joinCommunity(newCommunity);
+    
+    alert('Community Created Successfully! You have been added as a member.');
     navigate('/communities');
   }
 

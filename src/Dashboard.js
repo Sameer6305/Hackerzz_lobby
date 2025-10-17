@@ -3,22 +3,45 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import { signOutUser } from './utils/authUtils';
+import { getUserCommunities, getUserProjects, getUserActivityStats } from './utils/userDataUtils';
 
 export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userProfile, setUserProfile] = useState(getUserProfile());
+  const [userCommunities, setUserCommunities] = useState(getUserCommunities());
+  const [userProjects, setUserProjects] = useState(getUserProjects());
+  const [activityStats, setActivityStats] = useState(getUserActivityStats());
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   React.useEffect(() => {
     const handleProfileUpdate = (event) => {
       setUserProfile(event.detail);
     };
+
+    const handleUserDataUpdate = (event) => {
+      setUserCommunities(getUserCommunities());
+      setUserProjects(getUserProjects());
+      setActivityStats(getUserActivityStats());
+    };
     
     window.addEventListener('profileUpdated', handleProfileUpdate);
-    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
+    window.addEventListener('userDataUpdated', handleUserDataUpdate);
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
+      window.removeEventListener('userDataUpdated', handleUserDataUpdate);
+    };
   }, []);
 
   // Close dropdown when clicking outside
@@ -95,9 +118,9 @@ export default function Dashboard() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>
@@ -112,19 +135,79 @@ export default function Dashboard() {
               <button className="stats-btn" onClick={() => navigate('/activity')}>Find Jobs</button>
             </div>
             <div className="stats-body">
-              <div className="stats-empty-state">
-                <span className="stats-empty-icon">📊</span>
-                <p className="stats-empty-text">No activity yet. Start by joining a community or participating in a hackathon!</p>
-              </div>
+              {activityStats.communitiesJoined === 0 && activityStats.projectsCreated === 0 && activityStats.hackathonsParticipated === 0 ? (
+                <div className="stats-empty-state">
+                  <span className="stats-empty-icon">📊</span>
+                  <p className="stats-empty-text">No activity yet. Start by joining a community or participating in a hackathon!</p>
+                </div>
+              ) : (
+                <div className="stats-grid">
+                  <div className="stat-item">
+                    <div className="stat-value">{activityStats.communitiesJoined}</div>
+                    <div className="stat-label">Communities</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{activityStats.projectsCreated}</div>
+                    <div className="stat-label">Projects</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{activityStats.hackathonsParticipated}</div>
+                    <div className="stat-label">Hackathons</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{activityStats.profileViews}</div>
+                    <div className="stat-label">Profile Views</div>
+                  </div>
+                  <div className="stat-item">
+                    <div className="stat-value">{activityStats.contributions}</div>
+                    <div className="stat-label">Contributions</div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           <div className="dashboard-card projects-card">
-            <div className="projects-header">My Projects</div>
-            <div className="projects-empty-state">
-              <span className="projects-empty-icon">📁</span>
-              <p className="projects-empty-text">No projects yet</p>
-              <button className="project-btn-primary" onClick={() => navigate('/communities')}>Start Your First Project</button>
+            <div className="projects-header-wrapper">
+              <div className="projects-header">My Projects</div>
+              <button className="projects-add-btn" onClick={() => navigate('/communities')} title="Add New Project">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                </svg>
+              </button>
             </div>
+            {userProjects.length === 0 ? (
+              <div className="projects-empty-state">
+                <span className="projects-empty-icon">📁</span>
+                <p className="projects-empty-text">No projects yet</p>
+                <p className="projects-empty-subtitle">Start your first project and showcase your work</p>
+                <button className="project-btn-primary" onClick={() => navigate('/communities')}>Create Project</button>
+              </div>
+            ) : (
+              <div className="projects-list">
+                {[...userProjects].reverse().map((project) => (
+                  <div key={project.id} className="project-item">
+                    <div className="project-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#4fd18b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div className="project-content">
+                      <div className="project-name">{project.name}</div>
+                      <div className="project-description">{project.description}</div>
+                      <div className="project-meta">
+                        <span className="project-date">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 7V3M16 7V3M7 11H17M5 21H19C20.1046 21 21 20.1046 21 19V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7V19C3 20.1046 3.89543 21 5 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {new Date(project.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                        <span className="project-status-badge">Active</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="dashboard-card hackathons-card">
             <div className="hackathons-header">Latest Hackathons</div>
@@ -149,12 +232,50 @@ export default function Dashboard() {
 
           {/* Row 2 */}
           <div className="dashboard-card communities-card">
-            <div className="communities-header">Your Communities</div>
-            <div className="communities-empty-state">
-              <span className="communities-empty-icon">👥</span>
-              <p className="communities-empty-text">You haven't joined any communities yet</p>
-              <button className="community-btn-join" onClick={() => navigate('/communities')}>Browse Communities</button>
+            <div className="communities-header-wrapper">
+              <div className="communities-header">Your Communities</div>
+              <button className="communities-browse-btn" onClick={() => navigate('/communities')} title="Browse Communities">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Browse
+              </button>
             </div>
+            {userCommunities.length === 0 ? (
+              <div className="communities-empty-state">
+                <span className="communities-empty-icon">👥</span>
+                <p className="communities-empty-text">You haven't joined any communities yet</p>
+                <p className="communities-empty-subtitle">Connect with like-minded people and grow together</p>
+                <button className="community-btn-join" onClick={() => navigate('/communities')}>Browse Communities</button>
+              </div>
+            ) : (
+              <div className="communities-list">
+                {userCommunities.map((community) => (
+                  <div key={community.id} className="community-item" onClick={() => navigate(`/community/${community.id}`)}>
+                    <div className="community-avatar">
+                      {(community.projectDomain || community.communityName || 'C').charAt(0).toUpperCase()}
+                    </div>
+                    <div className="community-info">
+                      <div className="community-name">{community.communityName}</div>
+                      <div className="community-meta">
+                        <span className="community-members">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.3503 17.623 3.8507 18.1676 4.55231C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89317 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          {community.members?.length || 0} members
+                        </span>
+                        <span className="community-domain-badge">{community.projectDomain || 'General'}</span>
+                      </div>
+                    </div>
+                    <div className="community-arrow">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="dashboard-card deadlines-card">
             <div className="deadlines-header">Deadlines Nearby</div>

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import { recordContribution } from './utils/userDataUtils';
+import { signOutUser } from './utils/authUtils';
 
 export default function Activity() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -11,6 +13,14 @@ export default function Activity() {
   const [userProfile, setUserProfile] = useState(getUserProfile());
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   React.useEffect(() => {
@@ -192,7 +202,15 @@ export default function Activity() {
           </div>
           <div className="activity-card-footer">
             <span className="activity-deadline">⏰ Apply by: {intern.deadline}</span>
-            <button className="activity-apply-btn">Apply Now</button>
+            <button 
+              className="activity-apply-btn"
+              onClick={() => {
+                recordContribution();
+                alert('Application submitted! Your contribution has been recorded.');
+              }}
+            >
+              Apply Now
+            </button>
           </div>
         </div>
       ))}
@@ -232,7 +250,15 @@ export default function Activity() {
           </div>
           <div className="activity-card-footer">
             <span className="activity-deadline">⏰ Apply by: {job.deadline}</span>
-            <button className="activity-apply-btn">Apply Now</button>
+            <button 
+              className="activity-apply-btn"
+              onClick={() => {
+                recordContribution();
+                alert('Application submitted! Your contribution has been recorded.');
+              }}
+            >
+              Apply Now
+            </button>
           </div>
         </div>
       ))}
@@ -302,9 +328,9 @@ export default function Activity() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>

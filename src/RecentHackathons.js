@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import { registerForHackathon, getUserHackathons } from './utils/userDataUtils';
+import { signOutUser } from './utils/authUtils';
 
 // Recent hackathon data with real events from 2024-2025
 const hackathonsData = [
@@ -113,8 +115,17 @@ export default function RecentHackathons() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userProfile, setUserProfile] = useState(getUserProfile());
+  const [registeredHackathonIds, setRegisteredHackathonIds] = useState([]);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   useEffect(() => {
@@ -124,6 +135,36 @@ export default function RecentHackathons() {
     window.addEventListener('profileUpdated', handleProfileUpdate);
     return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
   }, []);
+
+  // Load registered hackathons
+  useEffect(() => {
+    const userHackathons = getUserHackathons();
+    setRegisteredHackathonIds(userHackathons.map(h => h.id));
+  }, []);
+
+  // Listen for user data updates
+  useEffect(() => {
+    const handleUserDataUpdate = () => {
+      const userHackathons = getUserHackathons();
+      setRegisteredHackathonIds(userHackathons.map(h => h.id));
+    };
+    
+    window.addEventListener('userDataUpdated', handleUserDataUpdate);
+    return () => window.removeEventListener('userDataUpdated', handleUserDataUpdate);
+  }, []);
+
+  // Handle hackathon registration
+  const handleRegister = (hackathon, event) => {
+    event.stopPropagation();
+    
+    const result = registerForHackathon(hackathon);
+    if (result.success) {
+      setRegisteredHackathonIds([...registeredHackathonIds, hackathon.id]);
+      alert('Successfully registered for hackathon! Check your Dashboard to see it.');
+    } else {
+      alert(result.message);
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -199,9 +240,9 @@ export default function RecentHackathons() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>
@@ -278,7 +319,15 @@ export default function RecentHackathons() {
                 <button className="action-icon-btn" title="Add to calendar">📅</button>
                 <button className="action-icon-btn" title="Share">🔗</button>
               </div>
-              <button className="register-btn-large">Register</button>
+              {registeredHackathonIds.includes(selectedHackathon.id) ? (
+                <button className="register-btn-large" style={{ background: '#10b981' }} disabled>
+                  ✓ Registered
+                </button>
+              ) : (
+                <button className="register-btn-large" onClick={(e) => handleRegister(selectedHackathon, e)}>
+                  Register Now
+                </button>
+              )}
             </div>
 
             <div className="hackathon-detail-stats">

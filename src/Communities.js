@@ -3,14 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import { joinCommunity, getUserCommunities } from './utils/userDataUtils';
+import { signOutUser } from './utils/authUtils';
 
 export default function Communities() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [communities, setCommunities] = useState([]);
   const [userProfile, setUserProfile] = useState(getUserProfile());
+  const [joinedCommunityIds, setJoinedCommunityIds] = useState([]);
   const menuRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   useEffect(() => {
@@ -26,7 +37,35 @@ export default function Communities() {
   useEffect(() => {
     const storedCommunities = JSON.parse(localStorage.getItem('communities') || '[]');
     setCommunities(storedCommunities);
+    
+    // Load joined communities
+    const userCommunities = getUserCommunities();
+    setJoinedCommunityIds(userCommunities.map(c => c.id));
   }, []);
+
+  // Listen for user data updates
+  useEffect(() => {
+    const handleUserDataUpdate = () => {
+      const userCommunities = getUserCommunities();
+      setJoinedCommunityIds(userCommunities.map(c => c.id));
+    };
+    
+    window.addEventListener('userDataUpdated', handleUserDataUpdate);
+    return () => window.removeEventListener('userDataUpdated', handleUserDataUpdate);
+  }, []);
+
+  // Handle join community
+  const handleJoinCommunity = (community, event) => {
+    event.stopPropagation(); // Prevent navigation to community page
+    
+    const result = joinCommunity(community);
+    if (result.success) {
+      setJoinedCommunityIds([...joinedCommunityIds, community.id]);
+      alert('Successfully joined community! Check your Dashboard to see it.');
+    } else {
+      alert(result.message);
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -102,9 +141,9 @@ export default function Communities() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>
@@ -217,24 +256,43 @@ export default function Communities() {
                 </div>
               ) : (
                 <div className="communities-grid">
-                  {communities.map((community) => (
-                    <div key={community.id} className="community-card user-community-card">
-                      <div className="community-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                        {community.projectDomain.charAt(0).toUpperCase()}
-                      </div>
-                      <div className="community-info">
-                        <h3 className="community-name">{community.communityName}</h3>
-                        <p className="community-description">{community.description || community.projectName}</p>
-                        <div className="community-meta">
-                          <span className="community-meta-item">🎯 {community.projectDomain}</span>
-                          <span className="community-meta-item">👥 {community.members.length || community.numberOfMembers || 0} members</span>
+                  {communities.map((community) => {
+                    const isJoined = joinedCommunityIds.includes(community.id);
+                    return (
+                      <div key={community.id} className="community-card user-community-card" onClick={() => navigate(`/community/${community.id}`)} style={{ cursor: 'pointer' }}>
+                        <div className="community-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                          {(community.projectDomain || community.communityName || 'C').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="community-info">
+                          <h3 className="community-name">{community.communityName}</h3>
+                          <p className="community-description">{community.description || community.projectName}</p>
+                          <div className="community-meta">
+                            <span className="community-meta-item">🎯 {community.projectDomain || 'General'}</span>
+                            <span className="community-meta-item">👥 {community.members?.length || community.numberOfMembers || 0} members</span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                          {isJoined ? (
+                            <button 
+                              className="enter-community-btn" 
+                              onClick={(e) => { e.stopPropagation(); navigate(`/community/${community.id}`); }}
+                              style={{ flex: 1 }}
+                            >
+                              Enter Community →
+                            </button>
+                          ) : (
+                            <button 
+                              className="enter-community-btn" 
+                              onClick={(e) => handleJoinCommunity(community, e)}
+                              style={{ flex: 1, background: '#10b981' }}
+                            >
+                              + Join Community
+                            </button>
+                          )}
                         </div>
                       </div>
-                      <button className="enter-community-btn" onClick={() => navigate(`/community/${community.id}`)}>
-                        Enter Community →
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </section>

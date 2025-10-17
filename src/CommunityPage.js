@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './App.css';
 import logoImg from './Img/logo.png';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import { joinCommunity, leaveCommunity, getUserCommunities, recordContribution } from './utils/userDataUtils';
+import { signOutUser } from './utils/authUtils';
 
 export default function CommunityPage() {
   const { communityId } = useParams();
@@ -13,9 +15,18 @@ export default function CommunityPage() {
   const [message, setMessage] = useState('');
   const [newDeadline, setNewDeadline] = useState({ title: '', date: '', priority: 'normal' });
   const [userProfile, setUserProfile] = useState(getUserProfile());
+  const [isMember, setIsMember] = useState(false);
   const menuRef = useRef(null);
   const chatEndRef = useRef(null);
   const navigate = useNavigate();
+
+  // Handle sign out
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/');
+    }
+  };
 
   // Listen for profile updates
   useEffect(() => {
@@ -33,10 +44,46 @@ export default function CommunityPage() {
     const foundCommunity = communities.find(c => c.id === communityId);
     if (foundCommunity) {
       setCommunity(foundCommunity);
+      
+      // Check if user is a member
+      const userCommunities = getUserCommunities();
+      setIsMember(userCommunities.some(c => c.id === communityId));
     } else {
       navigate('/communities');
     }
   }, [communityId, navigate]);
+
+  // Listen for user data updates
+  useEffect(() => {
+    const handleUserDataUpdate = () => {
+      const userCommunities = getUserCommunities();
+      setIsMember(userCommunities.some(c => c.id === communityId));
+    };
+    
+    window.addEventListener('userDataUpdated', handleUserDataUpdate);
+    return () => window.removeEventListener('userDataUpdated', handleUserDataUpdate);
+  }, [communityId]);
+
+  // Handle join/leave community
+  const handleJoinLeave = () => {
+    if (!community) return;
+    
+    if (isMember) {
+      const result = leaveCommunity(community.id);
+      if (result.success) {
+        setIsMember(false);
+        alert('You have left the community.');
+      }
+    } else {
+      const result = joinCommunity(community);
+      if (result.success) {
+        setIsMember(true);
+        alert('Successfully joined the community!');
+      } else {
+        alert(result.message);
+      }
+    }
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -75,6 +122,9 @@ export default function CommunityPage() {
 
     updateCommunity(updatedCommunity);
     setMessage('');
+    
+    // Record contribution
+    recordContribution();
   };
 
   // Add deadline
@@ -199,9 +249,9 @@ export default function CommunityPage() {
             {menuOpen && (
               <div className="appbar-user-dropdown">
                 <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-                <button className="appbar-user-dropdown-item">Settings</button>
+                <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
                 <div className="appbar-user-dropdown-divider" />
-                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+                <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
               </div>
             )}
           </div>
@@ -212,16 +262,27 @@ export default function CommunityPage() {
           {/* Community Header */}
           <div className="community-page-header">
             <div className="community-page-icon" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-              {community.projectDomain.charAt(0).toUpperCase()}
+              {(community.projectDomain || community.communityName || 'C').charAt(0).toUpperCase()}
             </div>
             <div className="community-page-info">
               <h1 className="community-page-title">{community.communityName}</h1>
-              <p className="community-page-subtitle">{community.projectName} • {community.projectDomain}</p>
+              <p className="community-page-subtitle">{community.projectName} • {community.projectDomain || 'General'}</p>
               <div className="community-page-meta">
-                <span>👥 {community.members.length || community.numberOfMembers || 0} members</span>
+                <span>👥 {community.members?.length || community.numberOfMembers || 0} members</span>
                 <span>📅 Created {formatDate(community.createdAt)}</span>
               </div>
             </div>
+            <button 
+              className="enter-community-btn" 
+              onClick={handleJoinLeave}
+              style={{ 
+                background: isMember ? '#ef4444' : '#10b981',
+                marginLeft: 'auto',
+                alignSelf: 'flex-start'
+              }}
+            >
+              {isMember ? '✕ Leave Community' : '+ Join Community'}
+            </button>
           </div>
 
           {/* Tabs */}
@@ -290,15 +351,15 @@ export default function CommunityPage() {
                   <div className="info-card">
                     <div className="info-row">
                       <span className="info-label">Hackathon Name:</span>
-                      <span className="info-value">{community.hackathonName}</span>
+                      <span className="info-value">{community.hackathonName || 'N/A'}</span>
                     </div>
                     <div className="info-row">
                       <span className="info-label">Project Domain:</span>
-                      <span className="info-value">{community.projectDomain}</span>
+                      <span className="info-value">{community.projectDomain || 'General'}</span>
                     </div>
                     <div className="info-row">
                       <span className="info-label">Project Name:</span>
-                      <span className="info-value">{community.projectName}</span>
+                      <span className="info-value">{community.projectName || 'N/A'}</span>
                     </div>
                     {community.hackathonUrl && (
                       <div className="info-row">
@@ -425,11 +486,11 @@ export default function CommunityPage() {
               <div className="members-container">
                 <div className="members-stats">
                   <div className="members-stat-card">
-                    <div className="members-stat-number">{community.members.length || community.numberOfMembers || 0}</div>
+                    <div className="members-stat-number">{community.members?.length || community.numberOfMembers || 0}</div>
                     <div className="members-stat-label">Total Members</div>
                   </div>
                   <div className="members-stat-card">
-                    <div className="members-stat-number">{community.members.length}</div>
+                    <div className="members-stat-number">{community.members?.length || 0}</div>
                     <div className="members-stat-label">Active Members</div>
                   </div>
                 </div>

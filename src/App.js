@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import ProtectedRoute from './ProtectedRoute';
 import './App.css';
 import homeImage from './Img/home-image.png';
 import aboutImage from './Img/about-image.png';
@@ -9,6 +10,7 @@ import Register from './Register';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
 import EditProfile from './EditProfile';
+import Settings from './Settings';
 import CommunityCreate from './CommunityCreate';
 import CommunityPage from './CommunityPage';
 import RecentHackathons from './RecentHackathons';
@@ -155,6 +157,7 @@ function App() {
   const isDashboard = location.pathname === '/dashboard';
   const isProfile = location.pathname === '/profile';
   const isEditProfile = location.pathname === '/edit-profile';
+  const isSettings = location.pathname === '/settings';
   const isCommunityCreate = location.pathname === '/community-create';
   const isRecentHackathons = location.pathname === '/recent-hackathons';
   const isCommunities = location.pathname === '/communities';
@@ -163,22 +166,23 @@ function App() {
   const isActivity = location.pathname === '/activity';
   return (
     <>
-      {!isDashboard && !isProfile && !isEditProfile && !isCommunityCreate && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
+      {!isDashboard && !isProfile && !isEditProfile && !isSettings && !isCommunityCreate && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
       {isCommunityCreate && <DashboardAppbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/community-create" element={<CommunityCreate />} />
-        <Route path="/community/:communityId" element={<CommunityPage />} />
-        <Route path="/recent-hackathons" element={<RecentHackathons />} />
-        <Route path="/communities" element={<Communities />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/deadlines" element={<Deadlines />} />
-        <Route path="/activity" element={<Activity />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/community-create" element={<ProtectedRoute><CommunityCreate /></ProtectedRoute>} />
+        <Route path="/community/:communityId" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
+        <Route path="/recent-hackathons" element={<ProtectedRoute><RecentHackathons /></ProtectedRoute>} />
+        <Route path="/communities" element={<ProtectedRoute><Communities /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+        <Route path="/deadlines" element={<ProtectedRoute><Deadlines /></ProtectedRoute>} />
+        <Route path="/activity" element={<ProtectedRoute><Activity /></ProtectedRoute>} />
       </Routes>
     </>
   );

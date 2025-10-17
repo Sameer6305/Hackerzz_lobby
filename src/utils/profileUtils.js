@@ -1,4 +1,5 @@
 // Utility functions for user profile management
+import { getCurrentUser } from './authUtils';
 
 /**
  * Get user profile data from localStorage
@@ -6,18 +7,52 @@
  */
 export const getUserProfile = () => {
   try {
+    // First check if user is signed in
+    const currentUser = getCurrentUser();
+    
     const savedProfile = localStorage.getItem('profileData');
     if (savedProfile) {
-      return JSON.parse(savedProfile);
+      const profile = JSON.parse(savedProfile);
+      
+      // If user is signed in, ensure profile has current user's basic info
+      if (currentUser) {
+        profile.name = profile.name || currentUser.name;
+        profile.email = profile.email || currentUser.email;
+      }
+      
+      return profile;
+    }
+    
+    // If no saved profile but user is signed in, return user's basic info
+    if (currentUser) {
+      return {
+        name: currentUser.name,
+        email: currentUser.email,
+        phone: '',
+        dateOfBirth: '',
+        gender: '',
+        college: '',
+        branch: '',
+        year: '',
+        passingYear: '',
+        city: '',
+        country: '',
+        bio: '',
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: '',
+        skills: [],
+        interests: [],
+      };
     }
   } catch (error) {
     console.error('Error loading profile data:', error);
   }
   
-  // Return default profile if none exists
+  // Return default profile if none exists and no user signed in
   return {
-    name: 'Alex Turner',
-    email: 'alex.turner@example.com',
+    name: 'Guest User',
+    email: 'guest@example.com',
     phone: '',
     dateOfBirth: '',
     gender: '',
@@ -67,7 +102,16 @@ export const getUserFirstName = (name) => {
  */
 export const saveUserProfile = (profileData) => {
   try {
+    // Import here to avoid circular dependency
+    const { updateUserProfile } = require('./authUtils');
+    
     localStorage.setItem('profileData', JSON.stringify(profileData));
+    
+    // Also update in registered users if user is signed in
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+      updateUserProfile(profileData);
+    }
     
     // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent('profileUpdated', { 
