@@ -159,6 +159,7 @@ function App() {
   const isEditProfile = location.pathname === '/edit-profile';
   const isSettings = location.pathname === '/settings';
   const isCommunityCreate = location.pathname === '/community-create';
+  const isCommunityPage = location.pathname.startsWith('/community/');
   const isRecentHackathons = location.pathname === '/recent-hackathons';
   const isCommunities = location.pathname === '/communities';
   const isNotifications = location.pathname === '/notifications';
@@ -166,7 +167,7 @@ function App() {
   const isActivity = location.pathname === '/activity';
   return (
     <>
-      {!isDashboard && !isProfile && !isEditProfile && !isSettings && !isCommunityCreate && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
+      {!isDashboard && !isProfile && !isEditProfile && !isSettings && !isCommunityCreate && !isCommunityPage && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
       {isCommunityCreate && <DashboardAppbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />

@@ -537,6 +537,7 @@
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -6373,5 +6374,29 @@ html {
     width: 100%;
   }
 }
+
+/* ==================== APPBAR HEIGHT FIX ==================== */
+/* Force consistent appbar height across all pages */
+.dashboard-appbar,
+header.dashboard-appbar {
+  height: 68px !important;
+  min-height: 68px !important;
+  max-height: 68px !important;
+  padding: 0 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+.appbar-search {
+  padding: 10px 22px !important;
+  height: auto !important;
+}
+
+.appbar-user-avatar {
+  width: 38px !important;
+  height: 38px !important;
+}
+/* ========================================================== */
 
 
