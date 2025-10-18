@@ -614,44 +614,57 @@
   font-size: 1.18rem;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #333333;
+  color: #2d3748;
 }
 .hackathons-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 .hackathon-item {
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px 18px;
-  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+.hackathon-item:hover {
+  background: #fff;
+  border-color: #cbd5e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .hackathon-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #333333;
-}
-.hackathon-date {
-  font-size: 0.97rem;
-  color: #bfc6d1;
-}
-.hackathon-status {
   font-size: 0.98rem;
   font-weight: 600;
-  border-radius: 8px;
-  padding: 3px 12px;
-  margin-left: auto;
+  color: #2d3748;
+  flex: 1;
+}
+.hackathon-date {
+  font-size: 0.88rem;
+  color: #718096;
+  font-weight: 500;
+}
+.hackathon-status {
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin-left: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 .hackathon-status.open {
-  background: #28A745;
+  background: #e6f7ed;
+  color: #22863a;
+  border: 1px solid #d1f0dc;
 }
 .hackathon-status.upcoming {
-  background: #e6eaff;
-  color: #4b6cff;
+  background: #f0f4ff;
+  color: #4c51bf;
+  border: 1px solid #dce4ff;
 }
 
 /* Deadlines Card Styles */
@@ -659,49 +672,62 @@
   font-size: 1.18rem;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #333333;
+  color: #2d3748;
 }
 .deadlines-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 .deadline-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+}
+.deadline-item:hover {
   background: #fff;
-  border-radius: 12px;
-  padding: 14px 18px;
-  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.04);
+  border-color: #cbd5e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .deadline-title {
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 600;
-  color: #333333;
+  color: #2d3748;
+  flex: 1;
 }
 .deadline-date {
-  font-size: 0.97rem;
-  color: #bfc6d1;
+  font-size: 0.88rem;
+  color: #718096;
+  font-weight: 500;
 }
 .deadline-status {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  border-radius: 8px;
-  padding: 4px 12px;
-  margin-left: auto;
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin-left: 12px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 .deadline-status.urgent {
-  background: #ff4757;
-  color: #fff;
+  background: #fee;
+  color: #c53030;
+  border: 1px solid #feb2b2;
 }
 .deadline-status.warning {
-  background: #ffa502;
-  color: #fff;
+  background: #fffbeb;
+  color: #c05621;
+  border: 1px solid #fbd38d;
 }
 .deadline-status.normal {
-  background: #e6eaff;
-  color: #4b6cff;
+  background: #f0f4ff;
+  color: #4c51bf;
+  border: 1px solid #dce4ff;
 }
 
 .communities-header {
