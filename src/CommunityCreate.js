@@ -20,11 +20,34 @@ export default function CommunityCreate() {
     contactEmail: userProfile.email || '',
   });
   const [formError, setFormError] = useState('');
+  const [showHackathonSuggestions, setShowHackathonSuggestions] = useState(false);
   const navigate = useNavigate();
+
+  // Popular hackathon suggestions
+  const hackathonSuggestions = [
+    { name: 'MLH Hackathon 2025', description: 'Major League Hacking event' },
+    { name: 'Google Cloud Hackathon', description: 'Cloud computing challenges' },
+    { name: 'NASA Space Apps Challenge', description: 'Space technology innovation' },
+    { name: 'HackMIT', description: 'MIT\'s premier hackathon' },
+    { name: 'TreeHacks', description: 'Stanford hackathon' },
+    { name: 'ETHGlobal', description: 'Ethereum blockchain hackathon' },
+    { name: 'React Global Summit', description: 'React development competition' },
+    { name: 'AI/ML Hackathon', description: 'Artificial Intelligence projects' },
+  ];
 
   function handleFormChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    
+    // Show suggestions when user focuses on hackathon name field
+    if (name === 'hackathonName') {
+      setShowHackathonSuggestions(value.length === 0);
+    }
+  }
+
+  function selectHackathonSuggestion(hackathonName) {
+    setForm((prev) => ({ ...prev, hackathonName }));
+    setShowHackathonSuggestions(false);
   }
 
   function handleFormSubmit(e) {
@@ -54,6 +77,12 @@ export default function CommunityCreate() {
     // Save to localStorage
     localStorage.setItem('communities', JSON.stringify(existingCommunities));
     
+    // Dispatch custom event to notify other components
+    console.log('Dispatching deadlinesUpdated event from community create');
+    window.dispatchEvent(new CustomEvent('deadlinesUpdated', {
+      detail: { communityId: newCommunity.id }
+    }));
+    
     // Add project to user's projects
     addProject({
       name: form.projectName,
@@ -82,7 +111,39 @@ export default function CommunityCreate() {
         </div>
         <div className="form-row">
           <label htmlFor="hackathonName">Hackathon Name*</label>
-          <input id="hackathonName" name="hackathonName" value={form.hackathonName} onChange={handleFormChange} required />
+          <div style={{ position: 'relative' }}>
+            <input 
+              id="hackathonName" 
+              name="hackathonName" 
+              value={form.hackathonName} 
+              onChange={handleFormChange}
+              onFocus={() => setShowHackathonSuggestions(form.hackathonName.length === 0)}
+              onBlur={() => setTimeout(() => setShowHackathonSuggestions(false), 200)}
+              required 
+              placeholder="Type or select from suggestions..."
+            />
+            {showHackathonSuggestions && (
+              <div className="hackathon-suggestions">
+                <div className="suggestions-header">
+                  <span className="ai-model-badge">🤖 AI Model Available</span>
+                  <span className="suggestions-subtitle">Popular Hackathons with AI Analysis Support</span>
+                </div>
+                {hackathonSuggestions.map((hackathon, index) => (
+                  <div 
+                    key={index} 
+                    className="suggestion-item"
+                    onClick={() => selectHackathonSuggestion(hackathon.name)}
+                  >
+                    <div className="suggestion-name">{hackathon.name}</div>
+                    <div className="suggestion-description">{hackathon.description}</div>
+                  </div>
+                ))}
+                <div className="suggestions-footer">
+                  💡 These hackathons have AI-powered analysis models available
+                </div>
+              </div>
+            )}
+          </div>
         </div>
         <div className="form-row">
           <label htmlFor="projectDomain">Project Domain*</label>

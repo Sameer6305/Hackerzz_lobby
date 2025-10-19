@@ -1,0 +1,10 @@
+# FREE PROTOTYPE VERSION - No paid APIs required!
+flask==3.0.0
+flask-cors==4.0.0
+requests==2.31.0
+beautifulsoup4==4.12.0
+
+# That's it! Only 4 dependencies, all FREE!
+# No anthropic (paid AI) needed
+# No python-dotenv needed (no API keys to manage)
+# Total cost: $0.00

@@ -16,6 +16,10 @@ export default function CommunityPage() {
   const [newDeadline, setNewDeadline] = useState({ title: '', date: '', priority: 'normal' });
   const [userProfile, setUserProfile] = useState(getUserProfile());
   const [isMember, setIsMember] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState(null);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+  const [analysisError, setAnalysisError] = useState(null);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
   const menuRef = useRef(null);
   const chatEndRef = useRef(null);
   const navigate = useNavigate();
@@ -47,7 +51,16 @@ export default function CommunityPage() {
       
       // Check if user is a member
       const userCommunities = getUserCommunities();
-      setIsMember(userCommunities.some(c => c.id === communityId));
+      const isMemberCheck = userCommunities.some(c => c.id === communityId);
+      setIsMember(isMemberCheck);
+      
+      // Load existing AI analysis if available
+      if (foundCommunity.aiAnalysis) {
+        setAiAnalysis(foundCommunity.aiAnalysis);
+      } else if (isMemberCheck && foundCommunity.hackathonName) {
+        // If member but no analysis yet, fetch it
+        fetchAIAnalysis(foundCommunity.hackathonName);
+      }
     } else {
       navigate('/communities');
     }
@@ -64,24 +77,75 @@ export default function CommunityPage() {
     return () => window.removeEventListener('userDataUpdated', handleUserDataUpdate);
   }, [communityId]);
 
+  // Fetch AI analysis for hackathon
+  const fetchAIAnalysis = async (hackathonName) => {
+    if (!hackathonName) return;
+    
+    setIsLoadingAnalysis(true);
+    setAnalysisError(null);
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/analyze-hackathon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hackathon_name: hackathonName }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setAiAnalysis(data.data);
+        
+        // Store analysis in community data
+        const communities = JSON.parse(localStorage.getItem('communities') || '[]');
+        const index = communities.findIndex(c => c.id === communityId);
+        if (index !== -1) {
+          communities[index].aiAnalysis = data.data;
+          localStorage.setItem('communities', JSON.stringify(communities));
+        }
+      } else {
+        setAnalysisError(data.error || 'Failed to analyze hackathon');
+      }
+    } catch (error) {
+      console.error('Error fetching AI analysis:', error);
+      setAnalysisError('Unable to connect to AI service. Please make sure the backend server is running.');
+    } finally {
+      setIsLoadingAnalysis(false);
+    }
+  };
+
   // Handle join/leave community
   const handleJoinLeave = () => {
     if (!community) return;
     
     if (isMember) {
-      const result = leaveCommunity(community.id);
-      if (result.success) {
-        setIsMember(false);
-        alert('You have left the community.');
-      }
+      // Show confirmation modal for leaving
+      setShowLeaveModal(true);
     } else {
       const result = joinCommunity(community);
       if (result.success) {
         setIsMember(true);
         alert('Successfully joined the community!');
+        
+        // Fetch AI analysis when user enrolls
+        if (community.hackathonName) {
+          fetchAIAnalysis(community.hackathonName);
+        }
       } else {
         alert(result.message);
       }
+    }
+  };
+
+  // Confirm leave
+  const confirmLeave = () => {
+    const result = leaveCommunity(community.id);
+    if (result.success) {
+      setIsMember(false);
+      setShowLeaveModal(false);
+      alert('You have left the community.');
     }
   };
 
@@ -155,6 +219,12 @@ export default function CommunityPage() {
       communities[index] = updatedCommunity;
       localStorage.setItem('communities', JSON.stringify(communities));
       setCommunity(updatedCommunity);
+      
+      // Dispatch custom event to notify other components
+      console.log('Dispatching deadlinesUpdated event');
+      window.dispatchEvent(new CustomEvent('deadlinesUpdated', { 
+        detail: { communityId, deadlines: updatedCommunity.deadlines } 
+      }));
     }
   };
 
@@ -272,18 +342,67 @@ export default function CommunityPage() {
                 <span>📅 Created {formatDate(community.createdAt)}</span>
               </div>
             </div>
-            <button 
-              className="enter-community-btn" 
-              onClick={handleJoinLeave}
-              style={{ 
-                background: isMember ? '#ef4444' : '#10b981',
-                marginLeft: 'auto',
-                alignSelf: 'flex-start'
-              }}
-            >
-              {isMember ? '✕ Leave Community' : '+ Join Community'}
-            </button>
+            
+            {/* Professional Join/Leave Button */}
+            {isMember ? (
+              <button 
+                className="leave-community-btn" 
+                onClick={handleJoinLeave}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+                </svg>
+                Leave Community
+              </button>
+            ) : (
+              <button 
+                className="join-community-btn" 
+                onClick={handleJoinLeave}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <line x1="19" y1="8" x2="19" y2="14"/>
+                  <line x1="22" y1="11" x2="16" y2="11"/>
+                </svg>
+                Join Community
+              </button>
+            )}
           </div>
+
+          {/* Leave Confirmation Modal */}
+          {showLeaveModal && (
+            <div className="modal-overlay" onClick={() => setShowLeaveModal(false)}>
+              <div className="leave-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="leave-modal-header">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <h2>Leave Community?</h2>
+                </div>
+                <p className="leave-modal-text">
+                  Are you sure you want to leave <strong>{community.communityName}</strong>? 
+                  You'll lose access to chats, deadlines, and community resources.
+                </p>
+                <div className="leave-modal-actions">
+                  <button 
+                    className="modal-btn modal-cancel-btn" 
+                    onClick={() => setShowLeaveModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    className="modal-btn modal-leave-btn" 
+                    onClick={confirmLeave}
+                  >
+                    Leave Community
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Tabs */}
           <div className="community-tabs">
@@ -346,6 +465,7 @@ export default function CommunityPage() {
             {/* Information Tab */}
             {activeTab === 'info' && (
               <div className="info-container">
+                {/* Basic Hackathon Information */}
                 <div className="info-section">
                   <h3 className="info-section-title">Hackathon Information</h3>
                   <div className="info-card">
@@ -372,6 +492,185 @@ export default function CommunityPage() {
                   </div>
                 </div>
 
+                {/* AI-Generated Analysis Section */}
+                {isMember && (
+                  <>
+                    {isLoadingAnalysis && (
+                      <div className="ai-loading-section">
+                        <div className="ai-loading-spinner"></div>
+                        <p className="ai-loading-text">🤖 AI is analyzing hackathon information...</p>
+                      </div>
+                    )}
+
+                    {analysisError && (
+                      <div className="ai-error-section">
+                        <div className="ai-error-icon">⚠️</div>
+                        <p className="ai-error-text">{analysisError}</p>
+                        <button 
+                          className="ai-retry-btn" 
+                          onClick={() => fetchAIAnalysis(community.hackathonName)}
+                        >
+                          Retry Analysis
+                        </button>
+                      </div>
+                    )}
+
+                    {aiAnalysis && !isLoadingAnalysis && (
+                      <>
+                        {/* AI Summary - Optimized Layout */}
+                        <div className="info-section ai-section">
+                          <h3 className="info-section-title">
+                            <span className="ai-badge">AI-Powered</span> Hackathon Summary
+                          </h3>
+                          <div className="info-card ai-card">
+                            <p className="ai-summary">{aiAnalysis.summary}</p>
+                            {aiAnalysis.source_url && (
+                              <a href={aiAnalysis.source_url} target="_blank" rel="noopener noreferrer" className="ai-source-link">
+                                📄 Source: {aiAnalysis.source_url}
+                              </a>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Timeline */}
+                        {aiAnalysis.timeline && (
+                          <div className="info-section ai-section">
+                            <h3 className="info-section-title">⏰ Timeline & Deadlines</h3>
+                            <div className="info-card ai-timeline-card">
+                              <div className="ai-timeline-row">
+                                <span className="ai-timeline-label">Registration Deadline:</span>
+                                <span className="ai-timeline-value">{aiAnalysis.timeline.registration_deadline}</span>
+                              </div>
+                              <div className="ai-timeline-row">
+                                <span className="ai-timeline-label">Submission Deadline:</span>
+                                <span className="ai-timeline-value">{aiAnalysis.timeline.submission_deadline}</span>
+                              </div>
+                              <div className="ai-timeline-row">
+                                <span className="ai-timeline-label">Current Stage:</span>
+                                <span className="ai-timeline-value highlight">{aiAnalysis.timeline.current_stage}</span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Technologies & Tools */}
+                        {aiAnalysis.technologies && aiAnalysis.technologies.length > 0 && (
+                          <div className="info-section ai-section">
+                            <h3 className="info-section-title">🛠️ Required Technologies & Tools</h3>
+                            <div className="ai-technologies-grid">
+                              {aiAnalysis.technologies.map((tech, index) => (
+                                <div key={index} className="ai-tech-card">
+                                  <div className="ai-tech-header">
+                                    <h4 className="ai-tech-name">{tech.name}</h4>
+                                    <span className={`ai-tech-difficulty ${tech.difficulty.toLowerCase()}`}>
+                                      {tech.difficulty}
+                                    </span>
+                                  </div>
+                                  <p className="ai-tech-description">{tech.description}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Requirements */}
+                        {aiAnalysis.requirements && aiAnalysis.requirements.length > 0 && (
+                          <div className="info-section ai-section">
+                            <h3 className="info-section-title">📋 Requirements</h3>
+                            <div className="info-card">
+                              <ul className="ai-requirements-list">
+                                {aiAnalysis.requirements.map((req, index) => (
+                                  <li key={index} className="ai-requirement-item">
+                                    <span className="ai-requirement-bullet">✓</span>
+                                    {req}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Reference Projects */}
+                        {aiAnalysis.reference_projects && aiAnalysis.reference_projects.length > 0 && (
+                          <div className="info-section ai-section">
+                            <h3 className="info-section-title">💡 Reference Projects</h3>
+                            <div className="ai-projects-grid">
+                              {aiAnalysis.reference_projects.map((project, index) => (
+                                <div key={index} className="ai-project-card">
+                                  <h4 className="ai-project-title">{project.title}</h4>
+                                  <p className="ai-project-description">{project.description}</p>
+                                  <p className="ai-project-relevance">
+                                    <strong>Why relevant:</strong> {project.relevance}
+                                  </p>
+                                  {project.github_url && (
+                                    <a 
+                                      href={project.github_url} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer" 
+                                      className="ai-project-link"
+                                    >
+                                      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                                      </svg>
+                                      View on GitHub
+                                    </a>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Tool Guides */}
+                        {aiAnalysis.tool_guides && aiAnalysis.tool_guides.length > 0 && (
+                          <div className="info-section ai-section">
+                            <h3 className="info-section-title">📚 Tool Guides & Resources</h3>
+                            {aiAnalysis.tool_guides.map((guide, index) => (
+                              <div key={index} className="info-card ai-guide-card">
+                                <h4 className="ai-guide-title">{guide.tool_name}</h4>
+                                <div className="ai-guide-section">
+                                  <h5 className="ai-guide-subtitle">Quick Start</h5>
+                                  <p className="ai-guide-text">{guide.quick_start}</p>
+                                </div>
+                                <div className="ai-guide-section">
+                                  <h5 className="ai-guide-subtitle">Key Resources</h5>
+                                  <ul className="ai-guide-resources">
+                                    {guide.key_resources.map((resource, idx) => (
+                                      <li key={idx}>{resource}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                                <div className="ai-guide-section">
+                                  <h5 className="ai-guide-subtitle">Hackathon Context</h5>
+                                  <p className="ai-guide-text">{guide.hackathon_context}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Tips */}
+                        {aiAnalysis.tips && aiAnalysis.tips.length > 0 && (
+                          <div className="info-section ai-section">
+                            <h3 className="info-section-title">💡 Practical Tips</h3>
+                            <div className="info-card">
+                              <ul className="ai-tips-list">
+                                {aiAnalysis.tips.map((tip, index) => (
+                                  <li key={index} className="ai-tip-item">
+                                    <span className="ai-tip-number">{index + 1}</span>
+                                    {tip}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* Project Description */}
                 <div className="info-section">
                   <h3 className="info-section-title">Project Description</h3>
                   <div className="info-card">
