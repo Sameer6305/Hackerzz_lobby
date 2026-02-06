@@ -1,0 +1,137 @@
+// ─── Prisma Schema ───────────────────────────────────────
+// Hackerzz Lobby — Production Database Schema
+// ─────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Non-pooled connection for migrations (Neon)
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  username  String    @unique
+  password  String
+  avatar    String?
+  bio       String?
+  isActive  Boolean   @default(true)      // Soft-delete flag
+  deletedAt DateTime?                     // Soft-delete timestamp
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  communities        CommunityMember[]
+  createdCommunities Community[]   @relation("CreatedBy")
+  messages           Message[]
+  createdDeadlines   Deadline[]
+
+  @@index([email])
+  @@index([isActive])
+  @@map("users")
+}
+
+model Hackathon {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  domain      String                // e.g., "Blockchain", "AI/ML", "Web Dev"
+  techStack   String[]              // e.g., ["React", "Node.js", "PostgreSQL"]
+  keywords    String[]              // search keywords for GitHub suggestions
+  startDate   DateTime?
+  endDate     DateTime?
+  website     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  communities Community[]
+
+  @@index([domain])
+  @@index([name])
+  @@map("hackathons")
+}
+
+model Community {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  hackathonId String
+  createdById String
+  isActive    Boolean   @default(true)      // Soft-delete flag
+  deletedAt   DateTime?                     // Soft-delete timestamp
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  hackathon   Hackathon         @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+  createdBy   User              @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  members     CommunityMember[]
+  messages    Message[]
+  deadlines   Deadline[]
+
+  @@index([hackathonId])
+  @@index([createdById])
+  @@index([isActive])
+  @@map("communities")
+}
+
+model CommunityMember {
+  id          String   @id @default(cuid())
+  userId      String
+  communityId String
+  role        Role     @default(MEMBER)
+  joinedAt    DateTime @default(now())
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+  @@index([communityId])
+  @@map("community_members")
+}
+
+model Message {
+  id          String   @id @default(cuid())
+  content     String
+  userId      String
+  communityId String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@index([communityId, createdAt])
+  @@map("messages")
+}
+
+model Deadline {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime
+  isCompleted Boolean  @default(false)
+  communityId String
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdBy  User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([communityId, dueDate])
+  @@index([createdById])
+  @@map("deadlines")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}

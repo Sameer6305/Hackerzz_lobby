@@ -1,0 +1,42 @@
+require('dotenv').config();
+
+const config = {
+  env: process.env.NODE_ENV || 'development',
+  port: parseInt(process.env.PORT, 10) || 5000,
+  db: {
+    url: process.env.DATABASE_URL,
+    directUrl: process.env.DIRECT_URL,
+  },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+    issuer: 'hackerzz-lobby',
+    algorithm: 'HS256',
+  },
+  github: {
+    token: process.env.GITHUB_TOKEN || '',
+    baseUrl: 'https://api.github.com',
+    cacheTTL: parseInt(process.env.GITHUB_CACHE_TTL, 10) || 600,
+  },
+  cors: {
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  },
+};
+
+// ─── Validation ──────────────────────────────────────────
+const required = [
+  ['JWT_SECRET', config.jwt.secret],
+  ['DATABASE_URL', config.db.url],
+];
+
+for (const [name, value] of required) {
+  if (!value) {
+    throw new Error(`${name} is required in environment variables`);
+  }
+}
+
+if (!config.db.url.startsWith('postgresql://') && !config.db.url.startsWith('postgres://')) {
+  throw new Error('DATABASE_URL must be a valid PostgreSQL connection string');
+}
+
+module.exports = config;
