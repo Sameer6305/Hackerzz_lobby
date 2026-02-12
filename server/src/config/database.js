@@ -37,16 +37,22 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// ─── Connection Health Check ─────────────────────────────
-const checkConnection = async () => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    logger.info('✅ Database connection established (Neon PostgreSQL)');
-    return true;
-  } catch (error) {
-    logger.error(`❌ Database connection failed: ${error.message}`);
-    return false;
+// ─── Connection Health Check (with retry for Neon autosuspend) ─────
+const checkConnection = async (retries = 3, delay = 3000) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      logger.info('✅ Database connection established (Neon PostgreSQL)');
+      return true;
+    } catch (error) {
+      logger.error(`❌ Database connection attempt ${attempt}/${retries} failed: ${error.message}`);
+      if (attempt < retries) {
+        logger.info(`⏳ Retrying in ${delay / 1000}s... (Neon may be waking up)`);
+        await new Promise((r) => setTimeout(r, delay));
+      }
+    }
   }
+  return false;
 };
 
 // ─── Graceful Shutdown ───────────────────────────────────

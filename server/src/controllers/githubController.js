@@ -23,6 +23,7 @@ const getCommunitySuggestions = async (req, res, next) => {
       include: { hackathon: true },
     });
     if (!community) throw ApiError.notFound('Community not found');
+    if (!community.hackathon) throw ApiError.notFound('Hackathon not found for this community');
 
     const result = await githubService.getSuggestionsForCommunity(community.hackathon);
 

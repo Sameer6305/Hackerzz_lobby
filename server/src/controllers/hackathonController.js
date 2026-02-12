@@ -39,9 +39,17 @@ const getHackathons = async (req, res, next) => {
       },
       orderBy: { createdAt: 'desc' },
       take: 50,
+      include: { _count: { select: { communities: true } } },
     });
 
-    res.json({ success: true, data: { hackathons } });
+    // Convert comma-separated strings back to arrays
+    const hackathonsWithArrays = hackathons.map(h => ({
+      ...h,
+      techStack: h.techStack ? h.techStack.split(',').map(t => t.trim()) : [],
+      keywords: h.keywords ? h.keywords.split(',').map(k => k.trim()) : [],
+    }));
+
+    res.json({ success: true, data: { hackathons: hackathonsWithArrays } });
   } catch (error) {
     next(error);
   }
@@ -51,29 +59,42 @@ const createHackathon = async (req, res, next) => {
   try {
     const { name, description, domain, techStack, keywords, startDate, endDate, website } = req.body;
 
+    // Convert arrays to comma-separated strings for SQLite
+    const techStackStr = Array.isArray(techStack) ? techStack.join(',') : techStack;
+    const keywordsArray = Array.isArray(keywords) ? keywords : [];
+    
     // Auto-generate keywords from name, domain, and techStack
+    const techStackArray = Array.isArray(techStack) ? techStack : (techStack ? techStack.split(',') : []);
     const autoKeywords = [
       ...name.toLowerCase().split(/\s+/),
       domain.toLowerCase(),
-      ...techStack.map((t) => t.toLowerCase()),
-      ...(keywords || []).map((k) => k.toLowerCase()),
+      ...techStackArray.map((t) => t.toLowerCase().trim()),
+      ...keywordsArray.map((k) => k.toLowerCase()),
     ];
     const uniqueKeywords = [...new Set(autoKeywords)].filter((k) => k.length > 2);
+    const keywordsStr = uniqueKeywords.join(',');
 
     const hackathon = await prisma.hackathon.create({
       data: {
         name,
         description,
         domain,
-        techStack,
-        keywords: uniqueKeywords,
+        techStack: techStackStr,
+        keywords: keywordsStr,
         startDate: startDate ? new Date(startDate) : null,
         endDate: endDate ? new Date(endDate) : null,
         website: website || null,
       },
     });
 
-    res.status(201).json({ success: true, data: { hackathon } });
+    // Convert back to arrays for response
+    const hackathonResponse = {
+      ...hackathon,
+      techStack: hackathon.techStack ? hackathon.techStack.split(',').map(t => t.trim()) : [],
+      keywords: hackathon.keywords ? hackathon.keywords.split(',').map(k => k.trim()) : [],
+    };
+
+    res.status(201).json({ success: true, data: { hackathon: hackathonResponse } });
   } catch (error) {
     next(error);
   }
@@ -87,7 +108,14 @@ const getHackathon = async (req, res, next) => {
     });
     if (!hackathon) throw ApiError.notFound('Hackathon not found');
 
-    res.json({ success: true, data: { hackathon } });
+    // Convert comma-separated strings back to arrays
+    const hackathonWithArrays = {
+      ...hackathon,
+      techStack: hackathon.techStack ? hackathon.techStack.split(',').map(t => t.trim()) : [],
+      keywords: hackathon.keywords ? hackathon.keywords.split(',').map(k => k.trim()) : [],
+    };
+
+    res.json({ success: true, data: { hackathon: hackathonWithArrays } });
   } catch (error) {
     next(error);
   }

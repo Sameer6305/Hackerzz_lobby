@@ -18,6 +18,14 @@ const errorHandler = (err, req, res, _next) => {
     message = 'Record not found';
   }
 
+  // Prisma connection errors (DB unreachable)
+  if (err.name === 'PrismaClientInitializationError' || err.name === 'PrismaClientKnownRequestError') {
+    if (err.message?.includes("Can't reach database server")) {
+      statusCode = 503;
+      message = 'Service temporarily unavailable. Please try again later.';
+    }
+  }
+
   // Log error
   if (statusCode >= 500) {
     logger.error(`${statusCode} - ${message}`, { stack: err.stack, url: req.originalUrl });

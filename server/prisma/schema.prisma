@@ -7,9 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "sqlite"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // Non-pooled connection for migrations (Neon)
 }
 
 model User {
@@ -40,8 +39,8 @@ model Hackathon {
   name        String
   description String
   domain      String                // e.g., "Blockchain", "AI/ML", "Web Dev"
-  techStack   String[]              // e.g., ["React", "Node.js", "PostgreSQL"]
-  keywords    String[]              // search keywords for GitHub suggestions
+  techStack   String                // Comma-separated: "React,Node.js,PostgreSQL"
+  keywords    String                // Comma-separated search keywords
   startDate   DateTime?
   endDate     DateTime?
   website     String?
@@ -84,7 +83,7 @@ model CommunityMember {
   id          String   @id @default(cuid())
   userId      String
   communityId String
-  role        Role     @default(MEMBER)
+  role        String   @default("MEMBER")  // "ADMIN" or "MEMBER"
   joinedAt    DateTime @default(now())
 
   // Relations
@@ -131,7 +130,4 @@ model Deadline {
   @@map("deadlines")
 }
 
-enum Role {
-  ADMIN
-  MEMBER
-}
+// Role is now a String field: "ADMIN" or "MEMBER"

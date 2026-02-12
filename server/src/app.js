@@ -52,13 +52,15 @@ const PORT = config.port;
 const startServer = async () => {
   const isConnected = await prisma.checkConnection();
   if (!isConnected) {
-    logger.error('Failed to connect to database. Exiting.');
-    process.exit(1);
+    logger.error('Failed to connect to database after retries. Starting server in degraded mode...');
   }
 
   app.listen(PORT, () => {
     logger.info(`🚀 Server running on port ${PORT} in ${config.env} mode`);
     logger.info(`📡 API available at http://localhost:${PORT}/api`);
+    if (!isConnected) {
+      logger.warn('⚠️  Database is unreachable — API requests requiring DB will fail');
+    }
   });
 };
 

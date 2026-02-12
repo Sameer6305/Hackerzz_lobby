@@ -35,8 +35,10 @@ for (const [name, value] of required) {
   }
 }
 
-if (!config.db.url.startsWith('postgresql://') && !config.db.url.startsWith('postgres://')) {
-  throw new Error('DATABASE_URL must be a valid PostgreSQL connection string');
+if (!config.db.url.startsWith('postgresql://') && 
+    !config.db.url.startsWith('postgres://') && 
+    !config.db.url.startsWith('file:')) {
+  throw new Error('DATABASE_URL must be a valid PostgreSQL or SQLite connection string');
 }
 
 module.exports = config;

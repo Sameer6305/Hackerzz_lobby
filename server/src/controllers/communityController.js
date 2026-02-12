@@ -2,6 +2,16 @@ const { z } = require('zod');
 const prisma = require('../config/database');
 const ApiError = require('../utils/apiError');
 
+// ─── Helper Functions ────────────────────────────────────
+const convertHackathonArrays = (hackathon) => {
+  if (!hackathon) return null;
+  return {
+    ...hackathon,
+    techStack: hackathon.techStack ? hackathon.techStack.split(',').map(t => t.trim()) : [],
+    keywords: hackathon.keywords ? hackathon.keywords.split(',').map(k => k.trim()) : [],
+  };
+};
+
 // ─── Validation ──────────────────────────────────────────
 const createCommunitySchema = z.object({
   body: z.object({
@@ -42,7 +52,13 @@ const createCommunity = async (req, res, next) => {
       },
     });
 
-    res.status(201).json({ success: true, data: { community } });
+    // Convert hackathon arrays
+    const communityWithArrays = {
+      ...community,
+      hackathon: convertHackathonArrays(community.hackathon),
+    };
+
+    res.status(201).json({ success: true, data: { community: communityWithArrays } });
   } catch (error) {
     next(error);
   }
@@ -65,6 +81,7 @@ const getMyCommunities = async (req, res, next) => {
 
     const communities = memberships.map((m) => ({
       ...m.community,
+      hackathon: convertHackathonArrays(m.community.hackathon),
       role: m.role,
       joinedAt: m.joinedAt,
     }));
@@ -100,7 +117,13 @@ const getCommunity = async (req, res, next) => {
 
     if (!community) throw ApiError.notFound('Community not found');
 
-    res.json({ success: true, data: { community, role: membership.role } });
+    // Convert hackathon arrays
+    const communityWithArrays = {
+      ...community,
+      hackathon: convertHackathonArrays(community.hackathon),
+    };
+
+    res.json({ success: true, data: { community: communityWithArrays, role: membership.role } });
   } catch (error) {
     next(error);
   }

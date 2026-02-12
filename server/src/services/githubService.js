@@ -134,7 +134,14 @@ const searchRepositories = async ({ domain, techStack = [], keywords = [], sort 
  * Performs multiple targeted searches and merges results.
  */
 const getSuggestionsForCommunity = async (hackathon) => {
-  const { domain, techStack, keywords } = hackathon;
+  // Convert comma-separated strings to arrays (for SQLite compatibility)
+  const techStack = hackathon.techStack 
+    ? (typeof hackathon.techStack === 'string' ? hackathon.techStack.split(',').map(t => t.trim()) : hackathon.techStack)
+    : [];
+  const keywords = hackathon.keywords
+    ? (typeof hackathon.keywords === 'string' ? hackathon.keywords.split(',').map(k => k.trim()) : hackathon.keywords)
+    : [];
+  const { domain } = hackathon;
 
   // Run 2 parallel searches: by relevance and by recent activity
   const [byStars, byRecent] = await Promise.all([
