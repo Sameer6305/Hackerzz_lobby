@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
-import Navbar from '../components/layout/Navbar';
+import DashboardLayout from '../components/layout/DashboardLayout';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import Card from '../components/ui/Card';
 import Modal from '../components/ui/Modal';
 import Loader from '../components/ui/Loader';
 import { Plus, Search, Sparkles } from 'lucide-react';
@@ -76,15 +75,14 @@ export default function CreateCommunity() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-dark-50">
-      <Navbar />
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <DashboardLayout>
+      <div className="max-w-3xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold text-dark-900 mb-1">Create a Community</h1>
-          <p className="text-dark-500 text-sm mb-8">Set up a team space for your hackathon</p>
+          <h1 className="text-2xl font-bold text-white mb-1">Create a Community</h1>
+          <p className="text-gray-500 text-sm mb-8">Set up a team space for your hackathon</p>
 
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
+            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>
           )}
 
           <form onSubmit={handleCreateCommunity} className="space-y-6">
@@ -93,12 +91,12 @@ export default function CreateCommunity() {
 
             {/* Hackathon Selection */}
             <div>
-              <label className="block text-sm font-medium text-dark-700 mb-2">Select Hackathon</label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Select Hackathon</label>
               <div className="flex gap-2 mb-3">
                 <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                   <input
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-dark-200 bg-white text-dark-900 placeholder:text-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-300 text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1e2231] border border-[#2a2f3f] text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm"
                     placeholder="Search hackathons..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -118,16 +116,16 @@ export default function CreateCommunity() {
                       onClick={() => setSelectedHackathon(h)}
                       className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${
                         selectedHackathon?.id === h.id
-                          ? 'border-primary-400 bg-primary-50 ring-2 ring-primary-200'
-                          : 'border-dark-200 hover:border-dark-300 hover:bg-dark-50'
+                          ? 'border-indigo-500/40 bg-indigo-600/10 ring-2 ring-indigo-500/20 text-white'
+                          : 'border-[#1e2231] bg-[#151822] hover:border-[#2a2f3f] text-gray-300'
                       }`}
                     >
-                      <span className="font-medium text-dark-800">{h.name}</span>
-                      <span className="text-xs text-dark-400 ml-2">{h.domain}</span>
+                      <span className="font-medium">{h.name}</span>
+                      <span className="text-xs text-gray-500 ml-2">{h.domain}</span>
                     </button>
                   ))}
                   {hackathons.length === 0 && (
-                    <p className="text-sm text-dark-400 text-center py-4">
+                    <p className="text-sm text-gray-500 text-center py-4">
                       No hackathons found. Create one first!
                     </p>
                   )}
@@ -141,23 +139,23 @@ export default function CreateCommunity() {
             </Button>
           </form>
         </motion.div>
-      </main>
 
-      {/* New Hackathon Modal */}
-      <Modal isOpen={showNewHackathon} onClose={() => setShowNewHackathon(false)} title="Add New Hackathon">
-        <form onSubmit={handleCreateHackathon} className="space-y-4">
-          <Input label="Hackathon Name" value={hForm.name} onChange={(e) => setHForm({ ...hForm, name: e.target.value })} placeholder="ETH Global 2025" required />
-          <Input label="Description" value={hForm.description} onChange={(e) => setHForm({ ...hForm, description: e.target.value })} placeholder="Brief about hackathon..." required />
-          <Input label="Domain" value={hForm.domain} onChange={(e) => setHForm({ ...hForm, domain: e.target.value })} placeholder="Blockchain, AI/ML, Web Dev" required />
-          <Input label="Tech Stack (comma separated)" value={hForm.techStack} onChange={(e) => setHForm({ ...hForm, techStack: e.target.value })} placeholder="React, Solidity, Node.js" required />
-          <Input label="Website (optional)" value={hForm.website} onChange={(e) => setHForm({ ...hForm, website: e.target.value })} placeholder="https://hackathon.com" />
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Start Date" type="date" value={hForm.startDate} onChange={(e) => setHForm({ ...hForm, startDate: e.target.value })} />
-            <Input label="End Date" type="date" value={hForm.endDate} onChange={(e) => setHForm({ ...hForm, endDate: e.target.value })} />
-          </div>
-          <Button type="submit" loading={creatingH} className="w-full">Add Hackathon</Button>
-        </form>
-      </Modal>
-    </div>
+        {/* New Hackathon Modal */}
+        <Modal isOpen={showNewHackathon} onClose={() => setShowNewHackathon(false)} title="Add New Hackathon">
+          <form onSubmit={handleCreateHackathon} className="space-y-4">
+            <Input label="Hackathon Name" value={hForm.name} onChange={(e) => setHForm({ ...hForm, name: e.target.value })} placeholder="ETH Global 2025" required />
+            <Input label="Description" value={hForm.description} onChange={(e) => setHForm({ ...hForm, description: e.target.value })} placeholder="Brief about hackathon..." required />
+            <Input label="Domain" value={hForm.domain} onChange={(e) => setHForm({ ...hForm, domain: e.target.value })} placeholder="Blockchain, AI/ML, Web Dev" required />
+            <Input label="Tech Stack (comma separated)" value={hForm.techStack} onChange={(e) => setHForm({ ...hForm, techStack: e.target.value })} placeholder="React, Solidity, Node.js" required />
+            <Input label="Website (optional)" value={hForm.website} onChange={(e) => setHForm({ ...hForm, website: e.target.value })} placeholder="https://hackathon.com" />
+            <div className="grid grid-cols-2 gap-3">
+              <Input label="Start Date" type="date" value={hForm.startDate} onChange={(e) => setHForm({ ...hForm, startDate: e.target.value })} />
+              <Input label="End Date" type="date" value={hForm.endDate} onChange={(e) => setHForm({ ...hForm, endDate: e.target.value })} />
+            </div>
+            <Button type="submit" loading={creatingH} className="w-full">Add Hackathon</Button>
+          </form>
+        </Modal>
+      </div>
+    </DashboardLayout>
   );
 }
