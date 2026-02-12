@@ -47,7 +47,10 @@ export default function Deadlines() {
   );
 
   const now = new Date();
-  const overdue = allDeadlines.filter(d => new Date(d.dueDate) < now && !d.isCompleted);
+  const overdue = allDeadlines.filter(d => {
+    const due = new Date(d.dueDate);
+    return due < now && due.toDateString() !== now.toDateString() && !d.isCompleted;
+  });
   const today = allDeadlines.filter(d => {
     const due = new Date(d.dueDate);
     return due.toDateString() === now.toDateString() && !d.isCompleted;

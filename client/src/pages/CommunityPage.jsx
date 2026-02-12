@@ -156,7 +156,11 @@ function ChatTab({ communityId, user }) {
     try {
       await api.post(`/communities/${communityId}/messages`, { content: newMsg });
       fetchMessages();
-    } catch { /* optimistic stays */ }
+    } catch {
+      // Remove optimistic message on failure and restore input
+      setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
+      setNewMsg(optimistic.content);
+    }
     setSending(false);
   };
 
@@ -276,15 +280,20 @@ function DeadlinesTab({ communityId, deadlines: initial }) {
   const [form, setForm] = useState({ title: '', description: '', dueDate: '' });
   const [creating, setCreating] = useState(false);
 
+  const [deadlineError, setDeadlineError] = useState('');
+
   const handleCreate = async (e) => {
     e.preventDefault();
     setCreating(true);
+    setDeadlineError('');
     try {
       const res = await api.post(`/communities/${communityId}/deadlines`, form);
       setDeadlines([...deadlines, res.data.deadline].sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)));
       setShowModal(false);
       setForm({ title: '', description: '', dueDate: '' });
-    } catch { /* handled */ }
+    } catch (err) {
+      setDeadlineError(err.message || 'Failed to create deadline');
+    }
     setCreating(false);
   };
 
@@ -320,6 +329,7 @@ function DeadlinesTab({ communityId, deadlines: initial }) {
       )}
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Deadline">
+        {deadlineError && <div className="mb-3 p-3 rounded-xl bg-red-500/10 text-red-400 text-sm">{deadlineError}</div>}
         <form onSubmit={handleCreate} className="space-y-4">
           <Input label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
           <Input label="Description (optional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
@@ -381,7 +391,7 @@ function MembersTab({ communityId, members: initial, role }) {
       </div>
 
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Invite Member">
-        {error && <div className="mb-3 p-3 rounded-xl bg-red-50 text-red-600 text-sm">{error}</div>}
+        {error && <div className="mb-3 p-3 rounded-xl bg-red-500/10 text-red-400 text-sm">{error}</div>}
         <form onSubmit={handleAdd} className="space-y-4">
           <Input label="Username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter username" required />
           <Button type="submit" loading={adding} className="w-full">Add Member</Button>
@@ -409,6 +419,12 @@ function GithubTab({ communityId }) {
   if (error) return (
     <Card hover={false}>
       <p className="text-center text-red-500 text-sm py-8">{error}</p>
+    </Card>
+  );
+
+  if (!data) return (
+    <Card hover={false}>
+      <p className="text-center text-gray-500 text-sm py-8">No data available.</p>
     </Card>
   );
 

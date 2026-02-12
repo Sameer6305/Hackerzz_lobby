@@ -31,6 +31,7 @@ export default function CreateCommunity() {
   const [creatingH, setCreatingH] = useState(false);
 
   useEffect(() => {
+    setLoadingH(true);
     api.get('/hackathons', { search })
       .then((res) => setHackathons(res.data.hackathons))
       .catch(console.error)
@@ -40,6 +41,7 @@ export default function CreateCommunity() {
   const handleCreateHackathon = async (e) => {
     e.preventDefault();
     setCreatingH(true);
+    setError('');
     try {
       const res = await api.post('/hackathons', {
         ...hForm,

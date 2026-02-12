@@ -24,7 +24,27 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      const data = await response.json();
+
+      // Handle empty or non-JSON responses safely
+      const text = await response.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        // Server returned non-JSON (e.g. HTML error page, empty body)
+        if (!response.ok) {
+          const error = new Error(
+            response.status === 502 || response.status === 503 || response.status === 0
+              ? 'Server is unavailable. Please try again later.'
+              : `Server error (${response.status})`
+          );
+          error.status = response.status;
+          throw error;
+        }
+        const error = new Error('Invalid response from server');
+        error.status = response.status;
+        throw error;
+      }
 
       if (!response.ok) {
         const error = new Error(data.message || 'Request failed');
@@ -35,7 +55,15 @@ class ApiClient {
 
       return data;
     } catch (error) {
-      if (error.status === 401) {
+      // Network error (server completely unreachable)
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        const networkError = new Error('Cannot connect to server. Please check if the server is running.');
+        networkError.status = 0;
+        throw networkError;
+      }
+      if (error.status === 401 && this.getToken()) {
+        // Only auto-redirect for expired/invalid tokens on authenticated requests
+        // Don't redirect on login/register failures
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/signin';

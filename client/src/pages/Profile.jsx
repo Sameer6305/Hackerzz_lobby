@@ -23,14 +23,14 @@ export default function Profile() {
   }, []);
 
   const totalMessages = communities.reduce((sum, c) => sum + (c._count?.messages || 0), 0);
-  const totalDeadlines = communities.reduce((sum, c) => sum + (c.deadlines?.length || 0), 0);
   const adminCommunities = communities.filter(c => c.role === 'ADMIN').length;
+  const uniqueHackathons = new Set(communities.map(c => c.community?.hackathonId || c.hackathonId)).size;
 
   const stats = [
     { label: 'Communities', value: communities.length, icon: Users, color: 'from-blue-500 to-cyan-500' },
     { label: 'Messages Sent', value: totalMessages, icon: MessageSquare, color: 'from-green-500 to-emerald-500' },
     { label: 'Teams Led', value: adminCommunities, icon: Trophy, color: 'from-amber-500 to-orange-500' },
-    { label: 'Active Hackathons', value: communities.length, icon: Calendar, color: 'from-purple-500 to-pink-500' },
+    { label: 'Active Hackathons', value: uniqueHackathons, icon: Calendar, color: 'from-purple-500 to-pink-500' },
   ];
 
   // Skills and interests (stored in localStorage for now, backend can be extended)
