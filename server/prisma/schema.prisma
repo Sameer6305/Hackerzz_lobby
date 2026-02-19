@@ -1,10 +1,6 @@
 // ─── Prisma Schema ───────────────────────────────────────
 // Hackerzz Lobby — Database Schema
-// ─────────────────────────────────────────────────────────
-// To switch to PostgreSQL for production:
-//   1. Change provider below from "sqlite" to "postgresql"
-//   2. Update DATABASE_URL in .env
-//   3. Run: npx prisma migrate dev --name init
+// DB: PostgreSQL (Neon) in production, SQLite in dev
 // ─────────────────────────────────────────────────────────
 
 generator client {
@@ -12,8 +8,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "sqlite"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {

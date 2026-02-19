@@ -1,4 +1,6 @@
-const API_BASE = '/api';
+// In production (Vercel), VITE_API_URL is set to the Render backend URL.
+// In development, it's undefined so the Vite proxy (/api → localhost:5000) is used.
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
 class ApiClient {
   constructor() {
