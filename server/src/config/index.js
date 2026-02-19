@@ -19,7 +19,9 @@ const config = {
     cacheTTL: parseInt(process.env.GITHUB_CACHE_TTL, 10) || 600,
   },
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL
+      ? [process.env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:3000']
+      : ['http://localhost:5173', 'http://localhost:3000'],
   },
 };
 
