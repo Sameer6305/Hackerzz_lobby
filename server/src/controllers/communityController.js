@@ -35,21 +35,24 @@ const createCommunity = async (req, res, next) => {
     const hackathon = await prisma.hackathon.findUnique({ where: { id: hackathonId } });
     if (!hackathon) throw ApiError.notFound('Hackathon not found');
 
-    const community = await prisma.community.create({
-      data: {
-        name,
-        description,
-        hackathonId,
-        createdById: req.user.id,
-        members: {
-          create: { userId: req.user.id, role: 'ADMIN' },
+    // Use transaction to ensure community + admin member are created atomically
+    const community = await prisma.$transaction(async (tx) => {
+      return tx.community.create({
+        data: {
+          name,
+          description,
+          hackathonId,
+          createdById: req.user.id,
+          members: {
+            create: { userId: req.user.id, role: 'ADMIN' },
+          },
         },
-      },
-      include: {
-        hackathon: true,
-        members: { include: { user: { select: { id: true, username: true, avatar: true } } } },
-        _count: { select: { members: true } },
-      },
+        include: {
+          hackathon: true,
+          members: { include: { user: { select: { id: true, username: true, avatar: true } } } },
+          _count: { select: { members: true } },
+        },
+      });
     });
 
     // Convert hackathon arrays
@@ -116,6 +119,7 @@ const getCommunity = async (req, res, next) => {
     });
 
     if (!community) throw ApiError.notFound('Community not found');
+    if (!community.isActive) throw ApiError.notFound('Community not found');
 
     // Convert hackathon arrays
     const communityWithArrays = {
@@ -134,6 +138,12 @@ const addMember = async (req, res, next) => {
     const { id } = req.params;
     const { username } = req.body;
 
+    // Verify the community exists
+    const community = await prisma.community.findUnique({ where: { id } });
+    if (!community || !community.isActive) {
+      throw ApiError.notFound('Community not found');
+    }
+
     // Verify requester is admin
     const adminCheck = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: req.user.id, communityId: id } },
@@ -142,19 +152,34 @@ const addMember = async (req, res, next) => {
       throw ApiError.forbidden('Only admins can add members');
     }
 
-    const userToAdd = await prisma.user.findUnique({ where: { username } });
-    if (!userToAdd) throw ApiError.notFound('User not found');
+    // Find target user (case-insensitive search, exclude soft-deleted)
+    const userToAdd = await prisma.user.findFirst({
+      where: {
+        username: { equals: username },
+        isActive: true,
+      },
+    });
+    if (!userToAdd) throw ApiError.notFound('User not found. Make sure the username is correct.');
 
+    // Check for existing membership
     const existingMember = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: userToAdd.id, communityId: id } },
     });
-    if (existingMember) throw ApiError.conflict('User is already a member');
+    if (existingMember) throw ApiError.conflict('User is already a member of this community');
 
-    await prisma.communityMember.create({
+    // Create member and return full data for immediate UI update
+    const newMember = await prisma.communityMember.create({
       data: { userId: userToAdd.id, communityId: id },
+      include: {
+        user: { select: { id: true, username: true, avatar: true, bio: true } },
+      },
     });
 
-    res.json({ success: true, message: `${username} added to community` });
+    res.status(201).json({
+      success: true,
+      message: `${userToAdd.username} added to community`,
+      data: { member: newMember },
+    });
   } catch (error) {
     next(error);
   }
@@ -165,18 +190,21 @@ const joinCommunity = async (req, res, next) => {
     const { id } = req.params;
 
     const community = await prisma.community.findUnique({ where: { id } });
-    if (!community) throw ApiError.notFound('Community not found');
+    if (!community || !community.isActive) throw ApiError.notFound('Community not found');
 
     const existing = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: req.user.id, communityId: id } },
     });
     if (existing) throw ApiError.conflict('Already a member');
 
-    await prisma.communityMember.create({
+    const member = await prisma.communityMember.create({
       data: { userId: req.user.id, communityId: id },
+      include: {
+        user: { select: { id: true, username: true, avatar: true, bio: true } },
+      },
     });
 
-    res.json({ success: true, message: 'Joined community successfully' });
+    res.status(201).json({ success: true, message: 'Joined community successfully', data: { member } });
   } catch (error) {
     next(error);
   }

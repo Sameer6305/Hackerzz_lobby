@@ -29,7 +29,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-primary-50 px-4">
+    <div className="min-h-screen flex items-center justify-center surface-base px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -41,8 +41,8 @@ export default function SignIn() {
               <Zap size={22} className="text-white" />
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-dark-900">Welcome back</h1>
-          <p className="text-dark-500 text-sm mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-heading">Welcome back</h1>
+          <p className="text-hint text-sm mt-1">Sign in to your account</p>
         </div>
 
         {error && (
@@ -53,7 +53,7 @@ export default function SignIn() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400 mt-3" />
+            <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint mt-3" />
             <Input
               label="Email"
               type="email"
@@ -65,7 +65,7 @@ export default function SignIn() {
             />
           </div>
           <div className="relative">
-            <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400 mt-3" />
+            <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint mt-3" />
             <Input
               label="Password"
               type="password"
@@ -81,7 +81,7 @@ export default function SignIn() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-dark-500 mt-6">
+        <p className="text-center text-sm text-hint mt-6">
           Don&apos;t have an account?{' '}
           <Link to="/register" className="text-primary-600 font-medium hover:text-primary-700 transition">
             Create one

@@ -42,7 +42,8 @@ const checkConnection = async (retries = 3, delay = 3000) => {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       await prisma.$queryRaw`SELECT 1`;
-      logger.info('✅ Database connection established (Neon PostgreSQL)');
+      const dbType = process.env.DATABASE_URL?.startsWith('file:') ? 'SQLite' : 'PostgreSQL';
+      logger.info(`✅ Database connection established (${dbType})`);
       return true;
     } catch (error) {
       logger.error(`❌ Database connection attempt ${attempt}/${retries} failed: ${error.message}`);

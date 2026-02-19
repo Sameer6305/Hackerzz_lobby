@@ -40,7 +40,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-primary-50 px-4">
+    <div className="min-h-screen flex items-center justify-center surface-base px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -52,8 +52,8 @@ export default function Register() {
               <Zap size={22} className="text-white" />
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-dark-900">Create account</h1>
-          <p className="text-dark-500 text-sm mt-1">Join the hackathon community</p>
+          <h1 className="text-2xl font-bold text-heading">Create account</h1>
+          <p className="text-hint text-sm mt-1">Join the hackathon community</p>
         </div>
 
         {error && (
@@ -64,15 +64,15 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
-            <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400 mt-3" />
+            <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint mt-3" />
             <Input label="Email" type="email" value={form.email} onChange={update('email')} placeholder="you@example.com" className="pl-10" required />
           </div>
           <div className="relative">
-            <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400 mt-3" />
+            <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint mt-3" />
             <Input label="Username" value={form.username} onChange={update('username')} placeholder="cool_hacker" className="pl-10" required />
           </div>
           <div className="relative">
-            <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400 mt-3" />
+            <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint mt-3" />
             <Input label="Password" type="password" value={form.password} onChange={update('password')} placeholder="••••••••" className="pl-10" required />
           </div>
           <Input label="Confirm Password" type="password" value={form.confirm} onChange={update('confirm')} placeholder="••••••••" required />
@@ -81,7 +81,7 @@ export default function Register() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-dark-500 mt-6">
+        <p className="text-center text-sm text-hint mt-6">
           Already have an account?{' '}
           <Link to="/signin" className="text-primary-600 font-medium hover:text-primary-700 transition">
             Sign in

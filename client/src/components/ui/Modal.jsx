@@ -23,13 +23,13 @@ export default function Modal({ isOpen, onClose, title, children }) {
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
             <div className="glass-card w-full max-w-lg max-h-[85vh] overflow-y-auto">
-              <div className="flex items-center justify-between p-6 border-b border-dark-100">
-                <h2 className="text-lg font-semibold text-dark-900">{title}</h2>
+              <div className="flex items-center justify-between p-6 border-b border-theme">
+                <h2 className="text-lg font-semibold text-heading">{title}</h2>
                 <button
                   onClick={onClose}
-                  className="p-1 rounded-lg hover:bg-dark-100 transition"
+                  className="p-1 rounded-lg hover:bg-[var(--surface-elevated)] transition"
                 >
-                  <X size={20} className="text-dark-500" />
+                  <X size={20} className="text-hint" />
                 </button>
               </div>
               <div className="p-6">{children}</div>

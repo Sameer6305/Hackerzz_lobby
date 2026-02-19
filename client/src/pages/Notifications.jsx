@@ -98,20 +98,20 @@ export default function Notifications() {
     <DashboardLayout>
       <div className="max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-            <Bell size={24} className="text-indigo-400" /> Notifications
+          <h1 className="text-2xl font-bold text-heading mb-6 flex items-center gap-3">
+            <Bell size={24} className="text-primary-500" /> Notifications
           </h1>
 
           {/* Tabs */}
-          <div className="flex gap-1 mb-6 bg-[#151822] rounded-xl p-1 border border-[#1e2231]">
+          <div className="flex gap-1 mb-6 surface-card rounded-xl p-1 border border-theme">
             {['news', 'community'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium capitalize transition-all flex-1 justify-center
                   ${activeTab === tab
-                    ? 'bg-indigo-600/20 text-indigo-400'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'bg-primary-600/20 text-primary-400'
+                    : 'text-label hover:text-heading'
                   }`}
               >
                 {tab === 'news' ? <Newspaper size={16} /> : <MessageSquare size={16} />}
@@ -129,20 +129,20 @@ export default function Notifications() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-[#151822] border border-[#1e2231] rounded-xl p-4 hover:border-[#2a2f3f] transition-all cursor-pointer group"
+                  className="surface-card border border-theme rounded-xl p-4 hover:border-theme-secondary transition-all cursor-pointer group"
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 rounded-lg bg-indigo-600/10 flex items-center justify-center flex-shrink-0">
-                      <Newspaper size={18} className="text-indigo-400" />
+                      <Newspaper size={18} className="text-primary-500" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-white group-hover:text-indigo-400 transition">
+                      <h3 className="text-sm font-medium text-heading group-hover:text-primary-400 transition">
                         {news.title}
                       </h3>
                       <div className="flex items-center gap-3 mt-2">
-                        <span className="text-xs text-gray-500">{news.source}</span>
-                        <span className="text-xs text-gray-600">•</span>
-                        <span className="text-xs text-gray-500">{news.time}</span>
+                        <span className="text-xs text-hint">{news.source}</span>
+                        <span className="text-xs text-hint">•</span>
+                        <span className="text-xs text-hint">{news.time}</span>
                       </div>
                     </div>
                     <Badge variant="primary">{news.category}</Badge>
@@ -156,10 +156,10 @@ export default function Notifications() {
           {activeTab === 'community' && (
             <div className="space-y-3">
               {communityNotifications.length === 0 ? (
-                <div className="bg-[#151822] border border-[#1e2231] rounded-xl p-12 text-center">
-                  <MessageSquare size={40} className="text-gray-600 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm">No community updates yet.</p>
-                  <p className="text-gray-600 text-xs mt-1">Join a community to see updates here.</p>
+                <div className="surface-card border border-theme rounded-xl p-12 text-center">
+                  <MessageSquare size={40} className="text-hint mx-auto mb-3" />
+                  <p className="text-label text-sm">No community updates yet.</p>
+                  <p className="text-hint text-xs mt-1">Join a community to see updates here.</p>
                 </div>
               ) : (
                 communityNotifications.map((notif, i) => (
@@ -168,15 +168,15 @@ export default function Notifications() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="bg-[#151822] border border-[#1e2231] rounded-xl p-4"
+                    className="surface-card border border-theme rounded-xl p-4"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center flex-shrink-0">
                         <span className="text-sm font-bold text-white">{notif.community[0]}</span>
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-white">{notif.community}</p>
-                        <p className="text-xs text-gray-500">{notif.message} • {notif.members} members</p>
+                        <p className="text-sm font-medium text-heading">{notif.community}</p>
+                        <p className="text-xs text-hint">{notif.message} • {notif.members} members</p>
                       </div>
                       <Badge variant={notif.role === 'ADMIN' ? 'primary' : 'default'}>{notif.role}</Badge>
                     </div>

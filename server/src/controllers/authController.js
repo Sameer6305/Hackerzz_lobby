@@ -21,6 +21,14 @@ const loginSchema = z.object({
   }),
 });
 
+const updateProfileSchema = z.object({
+  body: z.object({
+    username: z.string().min(3).max(30).regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, and underscores').optional(),
+    bio: z.string().max(500, 'Bio must be under 500 characters').optional(),
+    avatar: z.string().url('Invalid avatar URL').optional().nullable(),
+  }),
+});
+
 // ─── Helpers ─────────────────────────────────────────────
 const generateToken = (userId) => {
   return jwt.sign({ userId }, config.jwt.secret, {
@@ -77,7 +85,7 @@ const login = async (req, res, next) => {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
+    if (!user || !user.isActive) {
       throw ApiError.unauthorized('Invalid email or password');
     }
 
@@ -122,6 +130,12 @@ const updateProfile = async (req, res, next) => {
   try {
     const { username, bio, avatar } = req.body;
 
+    // Check for username conflict if username is being changed
+    if (username && username !== req.user.username) {
+      const existing = await prisma.user.findUnique({ where: { username } });
+      if (existing) throw ApiError.conflict('Username already taken');
+    }
+
     const user = await prisma.user.update({
       where: { id: req.user.id },
       data: {
@@ -137,4 +151,4 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, getMe, updateProfile, registerSchema, loginSchema };
+module.exports = { register, login, getMe, updateProfile, registerSchema, loginSchema, updateProfileSchema };

@@ -12,6 +12,7 @@ const getMessages = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { cursor, limit = 50 } = req.query;
+    const take = Math.min(parseInt(limit, 10) || 50, 100);
 
     // Verify membership
     const membership = await prisma.communityMember.findUnique({
@@ -25,15 +26,18 @@ const getMessages = async (req, res, next) => {
         user: { select: { id: true, username: true, avatar: true } },
       },
       orderBy: { createdAt: 'desc' },
-      take: parseInt(limit, 10),
+      take,
       ...(cursor && { cursor: { id: cursor }, skip: 1 }),
     });
+
+    // Reverse to chronological order for display
+    const sorted = messages.reverse();
 
     res.json({
       success: true,
       data: {
-        messages: messages.reverse(),
-        nextCursor: messages.length === parseInt(limit, 10) ? messages[0]?.id : null,
+        messages: sorted,
+        nextCursor: messages.length === take ? messages[messages.length - 1]?.id : null,
       },
     });
   } catch (error) {
@@ -46,6 +50,10 @@ const sendMessage = async (req, res, next) => {
     const { id } = req.params;
     const { content } = req.body;
 
+    if (!content || !content.trim()) {
+      throw ApiError.badRequest('Message content cannot be empty');
+    }
+
     // Verify membership
     const membership = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: req.user.id, communityId: id } },
@@ -53,7 +61,7 @@ const sendMessage = async (req, res, next) => {
     if (!membership) throw ApiError.forbidden('Not a member of this community');
 
     const message = await prisma.message.create({
-      data: { content, userId: req.user.id, communityId: id },
+      data: { content: content.trim(), userId: req.user.id, communityId: id },
       include: {
         user: { select: { id: true, username: true, avatar: true } },
       },

@@ -31,11 +31,12 @@ const getHackathons = async (req, res, next) => {
       where: {
         ...(search && {
           OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { description: { contains: search, mode: 'insensitive' } },
+            { name: { contains: search } },
+            { description: { contains: search } },
+            { keywords: { contains: search } },
           ],
         }),
-        ...(domain && { domain: { equals: domain, mode: 'insensitive' } }),
+        ...(domain && { domain: { equals: domain } }),
       },
       orderBy: { createdAt: 'desc' },
       take: 50,

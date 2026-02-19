@@ -41,4 +41,9 @@ if (!config.db.url.startsWith('postgresql://') &&
   throw new Error('DATABASE_URL must be a valid PostgreSQL or SQLite connection string');
 }
 
+// Warn about weak JWT secret in production
+if (config.env === 'production' && config.jwt.secret.length < 32) {
+  console.warn('WARNING: JWT_SECRET should be at least 32 characters in production');
+}
+
 module.exports = config;

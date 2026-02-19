@@ -80,8 +80,8 @@ export default function CreateCommunity() {
     <DashboardLayout>
       <div className="max-w-3xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-2xl font-bold text-white mb-1">Create a Community</h1>
-          <p className="text-gray-500 text-sm mb-8">Set up a team space for your hackathon</p>
+          <h1 className="text-2xl font-bold text-heading mb-1">Create a Community</h1>
+          <p className="text-hint text-sm mb-8">Set up a team space for your hackathon</p>
 
           {error && (
             <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>
@@ -93,12 +93,12 @@ export default function CreateCommunity() {
 
             {/* Hackathon Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Select Hackathon</label>
+              <label className="block text-sm font-medium text-body mb-2">Select Hackathon</label>
               <div className="flex gap-2 mb-3">
                 <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint" />
                   <input
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#1e2231] border border-[#2a2f3f] text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl surface-elevated border border-theme-secondary text-heading placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm"
                     placeholder="Search hackathons..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -119,15 +119,15 @@ export default function CreateCommunity() {
                       className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${
                         selectedHackathon?.id === h.id
                           ? 'border-indigo-500/40 bg-indigo-600/10 ring-2 ring-indigo-500/20 text-white'
-                          : 'border-[#1e2231] bg-[#151822] hover:border-[#2a2f3f] text-gray-300'
+                          : 'border-theme surface-card hover:border-theme-secondary text-body'
                       }`}
                     >
                       <span className="font-medium">{h.name}</span>
-                      <span className="text-xs text-gray-500 ml-2">{h.domain}</span>
+                      <span className="text-xs text-hint ml-2">{h.domain}</span>
                     </button>
                   ))}
                   {hackathons.length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">
+                    <p className="text-sm text-hint text-center py-4">
                       No hackathons found. Create one first!
                     </p>
                   )}

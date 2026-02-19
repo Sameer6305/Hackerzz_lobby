@@ -2,9 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Theme Tokens ────────────────────────────────────── */
+:root {
+  /* Light theme (default) */
+  --surface-base: #f8f9fa;
+  --surface-card: #ffffff;
+  --surface-elevated: #f1f3f5;
+  --surface-hover: #e9ecef;
+  --border-primary: #e2e5e9;
+  --border-secondary: #d1d5db;
+  --text-primary: #1a1d24;
+  --text-secondary: #495057;
+  --text-tertiary: #6c757d;
+  --text-muted: #868e96;
+  --scrollbar-thumb: #ced4da;
+  --scrollbar-hover: #adb5bd;
+}
+
+.dark {
+  --surface-base: #0f1117;
+  --surface-card: #151822;
+  --surface-elevated: #1e2231;
+  --surface-hover: #252a3a;
+  --border-primary: #1e2231;
+  --border-secondary: #2a2f3f;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #9ca3af;
+  --text-muted: #6b7280;
+  --scrollbar-thumb: #2a2f3f;
+  --scrollbar-hover: #3a4050;
+}
+
 @layer base {
   body {
-    @apply font-sans bg-white;
+    @apply font-sans;
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   /* Subtle noise texture overlay */
@@ -21,16 +56,34 @@
   /* Custom scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #ced4da; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/80 backdrop-blur-sm border border-dark-200/50 rounded-2xl shadow-soft;
+    background: var(--surface-card);
+    border: 1px solid var(--border-primary);
+    @apply backdrop-blur-sm rounded-2xl shadow-soft;
+  }
+
+  .dark .glass-card {
+    background: rgba(21, 24, 34, 0.8);
   }
 
   .gradient-text {
     @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
   }
+
+  /* Theme-aware surface utilities */
+  .surface-base { background-color: var(--surface-base); }
+  .surface-card { background-color: var(--surface-card); }
+  .surface-elevated { background-color: var(--surface-elevated); }
+  .surface-hover { background-color: var(--surface-hover); }
+  .border-theme { border-color: var(--border-primary); }
+  .border-theme-secondary { border-color: var(--border-secondary); }
+  .text-heading { color: var(--text-primary); }
+  .text-body { color: var(--text-secondary); }
+  .text-label { color: var(--text-tertiary); }
+  .text-hint { color: var(--text-muted); }
 }

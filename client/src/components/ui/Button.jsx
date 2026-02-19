@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 
 const variants = {
   primary: 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg',
-  secondary: 'bg-dark-100 hover:bg-dark-200 text-dark-800',
-  outline: 'border-2 border-primary-300 text-primary-700 hover:bg-primary-50',
-  ghost: 'text-dark-600 hover:bg-dark-100 hover:text-dark-800',
+  secondary: 'bg-[var(--surface-elevated)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)]',
+  outline: 'border-2 border-primary-300 text-primary-700 dark:text-primary-300 hover:bg-[var(--surface-elevated)]',
+  ghost: 'text-[var(--text-tertiary)] hover:bg-[var(--surface-elevated)] hover:text-[var(--text-primary)]',
   danger: 'bg-red-500 hover:bg-red-600 text-white',
 };
 

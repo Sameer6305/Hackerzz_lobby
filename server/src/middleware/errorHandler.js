@@ -18,12 +18,24 @@ const errorHandler = (err, req, res, _next) => {
     message = 'Record not found';
   }
 
+  // Foreign key constraint violation
+  if (err.code === 'P2003') {
+    statusCode = 400;
+    message = 'Referenced record does not exist';
+  }
+
   // Prisma connection errors (DB unreachable)
   if (err.name === 'PrismaClientInitializationError' || err.name === 'PrismaClientKnownRequestError') {
-    if (err.message?.includes("Can't reach database server")) {
+    if (err.message?.includes("Can't reach database server") || err.message?.includes('SQLITE_CANTOPEN')) {
       statusCode = 503;
       message = 'Service temporarily unavailable. Please try again later.';
     }
+  }
+
+  // Prisma validation error (bad data types, etc.)
+  if (err.name === 'PrismaClientValidationError') {
+    statusCode = 400;
+    message = 'Invalid request data';
   }
 
   // Log error

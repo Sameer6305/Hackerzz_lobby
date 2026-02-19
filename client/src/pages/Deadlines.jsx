@@ -93,11 +93,11 @@ export default function Deadlines() {
       <div className="max-w-4xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-heading flex items-center gap-3">
               <Clock size={24} className="text-indigo-400" /> All Deadlines
             </h1>
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <span className="px-2.5 py-1 rounded-lg bg-[#151822] border border-[#1e2231]">
+            <div className="flex items-center gap-2 text-sm text-label">
+              <span className="px-2.5 py-1 rounded-lg surface-card border border-theme">
                 {allDeadlines.length} total
               </span>
             </div>
@@ -108,10 +108,10 @@ export default function Deadlines() {
               <div className="w-8 h-8 border-2 border-gray-600 border-t-indigo-500 rounded-full animate-spin" />
             </div>
           ) : allDeadlines.length === 0 ? (
-            <div className="bg-[#151822] border border-[#1e2231] rounded-xl p-12 text-center">
-              <Clock size={40} className="text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400 text-sm">No deadlines yet.</p>
-              <p className="text-gray-600 text-xs mt-1">Create deadlines in your community pages.</p>
+            <div className="surface-card border border-theme rounded-xl p-12 text-center">
+              <Clock size={40} className="text-hint mx-auto mb-3" />
+              <p className="text-label text-sm">No deadlines yet.</p>
+              <p className="text-hint text-xs mt-1">Create deadlines in your community pages.</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -136,22 +136,22 @@ export default function Deadlines() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.05 }}
                           onClick={() => navigate(`/community/${deadline.communityId}`)}
-                          className="bg-[#151822] border border-[#1e2231] rounded-xl p-4 hover:border-[#2a2f3f] transition-all cursor-pointer group"
+                          className="surface-card border border-theme rounded-xl p-4 hover:border-theme-secondary transition-all cursor-pointer group"
                         >
                           <div className="flex items-center gap-4">
                             <div className={`w-3 h-3 rounded-full ${section.dot} flex-shrink-0`} />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white">{deadline.title}</p>
+                              <p className="text-sm font-medium text-heading">{deadline.title}</p>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-gray-500">{deadline.communityName}</span>
-                                <span className="text-xs text-gray-600">•</span>
-                                <span className="text-xs text-gray-500">{formatDate(deadline.dueDate)}</span>
+                                <span className="text-xs text-hint">{deadline.communityName}</span>
+                                <span className="text-xs text-hint">•</span>
+                                <span className="text-xs text-hint">{formatDate(deadline.dueDate)}</span>
                               </div>
                             </div>
                             <span className={`text-xs font-medium ${section.color}`}>
                               {getTimeRemaining(deadline.dueDate)}
                             </span>
-                            <ArrowRight size={14} className="text-gray-600 group-hover:text-indigo-400 transition" />
+                            <ArrowRight size={14} className="text-hint group-hover:text-indigo-400 transition" />
                           </div>
                         </motion.div>
                       ))}
