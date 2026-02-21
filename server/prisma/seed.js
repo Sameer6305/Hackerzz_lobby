@@ -9,13 +9,12 @@ const prisma = new PrismaClient({
 async function seed() {
   console.log('🌱 Seeding database...');
 
-  // Clean existing data
-  await prisma.message.deleteMany();
-  await prisma.deadline.deleteMany();
-  await prisma.communityMember.deleteMany();
-  await prisma.community.deleteMany();
-  await prisma.hackathon.deleteMany();
-  await prisma.user.deleteMany();
+  // Skip seeding if data already exists
+  const existingUsers = await prisma.user.count();
+  if (existingUsers > 0) {
+    console.log('✅ Database already seeded, skipping.');
+    return;
+  }
 
   // Create demo users with realistic profiles
   const password = await bcrypt.hash('password123', 12);
