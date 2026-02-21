@@ -2,6 +2,11 @@
 // In development, it's undefined so the Vite proxy (/api → localhost:5000) is used.
 const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
+// Wake up Render free-tier server on app load (prevents cold-start timeout on first user action)
+if (import.meta.env.VITE_API_URL) {
+  fetch(`${import.meta.env.VITE_API_URL}/api/health`, { method: 'GET' }).catch(() => {});
+}
+
 class ApiClient {
   constructor() {
     this.baseUrl = API_BASE;
@@ -24,9 +29,20 @@ class ApiClient {
       ...options,
     };
 
-    try {
-      const response = await fetch(url, config);
+    // Retry once on network failure (handles Render cold-start ~30s spin-up)
+    let response;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        response = await fetch(url, { ...config, signal: AbortSignal.timeout(35000) });
+        break;
+      } catch (fetchErr) {
+        if (attempt === 2) throw fetchErr;
+        // Wait 2s then retry
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
 
+    try {
       // Handle empty or non-JSON responses safely
       const text = await response.text();
       let data;
