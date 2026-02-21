@@ -19,20 +19,8 @@ const config = {
     cacheTTL: parseInt(process.env.GITHUB_CACHE_TTL, 10) || 600,
   },
   cors: {
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, server-to-server)
-      if (!origin) return callback(null, true);
-      const allowed = [
-        'http://localhost:5173',
-        'http://localhost:3000',
-        process.env.CLIENT_URL,
-      ].filter(Boolean);
-      // Allow any Vercel preview/production deployment
-      if (origin.endsWith('.vercel.app') || allowed.includes(origin)) {
-        return callback(null, true);
-      }
-      callback(new Error(`CORS: origin ${origin} not allowed`));
-    },
+    // Reflect request origin back (works for Vercel, localhost, any preview URL)
+    origin: true,
   },
 };
 
