@@ -164,14 +164,30 @@ const getSuggestionsForCommunity = async (hackathon) => {
 
   // Score and sort: stars weight + recency weight
   const scored = merged.map((repo) => {
+    const loweredTopics = (repo.topics || []).map((t) => String(t).toLowerCase());
+    const matchesToken = (token) => loweredTopics.some((topic) => topic.includes(String(token).toLowerCase()));
+
     const starScore = Math.log10(repo.stars + 1) * 10;
     const daysSinceUpdate = (Date.now() - new Date(repo.updatedAt).getTime()) / (1000 * 60 * 60 * 24);
     const recencyScore = Math.max(0, 10 - daysSinceUpdate / 30);
-    const relevanceScore = repo.topics.some((t) =>
-      [...techStack, ...keywords, domain].some((k) => t.toLowerCase().includes(k.toLowerCase()))
-    ) ? 5 : 0;
+    const matchedTech = techStack.filter((tech) => matchesToken(tech));
+    const matchedKeywords = keywords.filter((keyword) => matchesToken(keyword));
+    const domainMatch = matchesToken(domain);
+    const relevanceScore = domainMatch || matchedTech.length > 0 || matchedKeywords.length > 0 ? 5 : 0;
 
-    return { ...repo, score: starScore + recencyScore + relevanceScore };
+    const score = starScore + recencyScore + relevanceScore;
+    const fitScore = Math.min(100, Math.round((score / 35) * 100));
+    const reasons = [];
+    if (domainMatch) reasons.push(`Matches ${domain} domain`);
+    if (matchedTech.length > 0) reasons.push(`Uses ${matchedTech.slice(0, 2).join(', ')}`);
+    if (matchedKeywords.length > 0) reasons.push(`Aligned with ${matchedKeywords.slice(0, 2).join(', ')}`);
+
+    return {
+      ...repo,
+      score,
+      fitScore,
+      fitReasons: reasons,
+    };
   });
 
   scored.sort((a, b) => b.score - a.score);

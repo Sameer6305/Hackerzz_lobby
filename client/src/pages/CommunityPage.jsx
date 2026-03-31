@@ -521,6 +521,9 @@ function GithubTab({ communityId }) {
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                  <span className="text-[11px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Fit {repo.fitScore ?? 0}%
+                  </span>
                   <span className="flex items-center gap-1 text-xs text-amber-400 font-medium">
                     <Star size={12} /> {repo.stars?.toLocaleString()}
                   </span>
@@ -532,6 +535,15 @@ function GithubTab({ communityId }) {
                   )}
                 </div>
               </div>
+              {repo.fitReasons?.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {repo.fitReasons.slice(0, 3).map((reason) => (
+                    <span key={reason} className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[10px] border border-emerald-500/20">
+                      {reason}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
         ))}

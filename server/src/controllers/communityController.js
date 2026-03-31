@@ -95,6 +95,34 @@ const getMyCommunities = async (req, res, next) => {
   }
 };
 
+const getDiscoverCommunities = async (req, res, next) => {
+  try {
+    const communities = await prisma.community.findMany({
+      where: {
+        isActive: true,
+        members: {
+          none: { userId: req.user.id },
+        },
+      },
+      include: {
+        hackathon: true,
+        _count: { select: { members: true, messages: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 30,
+    });
+
+    const normalized = communities.map((community) => ({
+      ...community,
+      hackathon: convertHackathonArrays(community.hackathon),
+    }));
+
+    res.json({ success: true, data: { communities: normalized } });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getMyDeadlines = async (req, res, next) => {
   try {
     const deadlines = await prisma.deadline.findMany({
@@ -235,6 +263,6 @@ const joinCommunity = async (req, res, next) => {
 };
 
 module.exports = {
-  createCommunity, getMyCommunities, getMyDeadlines, getCommunity, addMember, joinCommunity,
+  createCommunity, getMyCommunities, getDiscoverCommunities, getMyDeadlines, getCommunity, addMember, joinCommunity,
   createCommunitySchema, addMemberSchema,
 };

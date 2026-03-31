@@ -22,16 +22,37 @@ const TOPICS = [
 export default function Communities() {
   const navigate = useNavigate();
   const [communities, setCommunities] = useState([]);
+  const [discover, setDiscover] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [joining, setJoining] = useState({});
 
   useEffect(() => {
-    api.get('/communities')
-      .then((res) => setCommunities(res.data?.communities || []))
+    Promise.all([
+      api.get('/communities'),
+      api.get('/communities/discover'),
+    ])
+      .then(([mineRes, discoverRes]) => {
+        setCommunities(mineRes.data?.communities || []);
+        setDiscover(discoverRes.data?.communities || []);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  const joinCommunity = async (community) => {
+    setJoining((prev) => ({ ...prev, [community.id]: true }));
+    try {
+      await api.post(`/communities/${community.id}/join`, {});
+      setCommunities((prev) => [{ ...community, role: 'MEMBER' }, ...prev]);
+      setDiscover((prev) => prev.filter((c) => c.id !== community.id));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setJoining((prev) => ({ ...prev, [community.id]: false }));
+    }
+  };
 
   const filtered = communities.filter(c => {
     const matchSearch = !search || 
@@ -136,6 +157,25 @@ export default function Communities() {
                   </div>
                 </div>
               )}
+
+              {discover.length > 0 && (
+                <div>
+                  <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <Trophy size={14} /> Discover Communities
+                  </h3>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {discover.slice(0, 9).map((c, i) => (
+                      <DiscoverCard
+                        key={c.id}
+                        community={c}
+                        index={i}
+                        onJoin={joinCommunity}
+                        joining={!!joining[c.id]}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </motion.div>
@@ -171,6 +211,33 @@ function CommunityCard({ community: c, index, navigate }) {
         <span className="flex items-center gap-1"><MessageSquare size={12} /> {c._count?.messages || 0}</span>
         <ArrowRight size={12} className="ml-auto text-hint group-hover:text-indigo-400 transition" />
       </div>
+    </motion.div>
+  );
+}
+
+function DiscoverCard({ community: c, index, onJoin, joining }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className="surface-card border border-theme rounded-xl p-5 hover:border-emerald-500/30 transition-all"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-600 to-cyan-600 flex items-center justify-center">
+          <span className="text-sm font-bold text-white">{c.name?.[0]?.toUpperCase()}</span>
+        </div>
+        {c.hackathon?.domain && <Badge variant="success">{c.hackathon.domain}</Badge>}
+      </div>
+      <h3 className="text-base font-semibold text-heading mb-1">{c.name}</h3>
+      <p className="text-xs text-hint mb-3">{c.hackathon?.name}</p>
+      <div className="flex items-center gap-4 text-xs text-hint pt-3 border-t border-theme mb-3">
+        <span className="flex items-center gap-1"><Users size={12} /> {c._count?.members || 0}</span>
+        <span className="flex items-center gap-1"><MessageSquare size={12} /> {c._count?.messages || 0}</span>
+      </div>
+      <Button size="sm" className="w-full" loading={joining} onClick={() => onJoin(c)}>
+        Join Community
+      </Button>
     </motion.div>
   );
 }
