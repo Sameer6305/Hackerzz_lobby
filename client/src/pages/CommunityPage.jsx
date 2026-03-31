@@ -131,14 +131,19 @@ function ChatTab({ communityId, user }) {
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   const endRef = useRef(null);
   const pollRef = useRef(null);
 
   const fetchMessages = useCallback(() => {
     api.get(`/communities/${communityId}/messages`).then((res) => {
       setMessages(res.data.messages);
+      setError('');
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch(() => {
+      setError('Unable to load chat. Please retry.');
+      setLoading(false);
+    });
   }, [communityId]);
 
   useEffect(() => {
@@ -182,6 +187,12 @@ function ChatTab({ communityId, user }) {
 
   return (
     <div className="surface-card border border-theme rounded-xl flex flex-col h-[65vh]">
+      {error && (
+        <div className="mx-4 mt-4 mb-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center justify-between gap-3">
+          <span>{error}</span>
+          <button type="button" onClick={fetchMessages} className="text-red-300 hover:text-red-200 underline">Retry</button>
+        </div>
+      )}
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-3 p-4 pr-2">
         {messages.length === 0 && (
@@ -295,6 +306,10 @@ function DeadlinesTab({ communityId, deadlines: initial }) {
   const [creating, setCreating] = useState(false);
 
   const [deadlineError, setDeadlineError] = useState('');
+
+  useEffect(() => {
+    setDeadlines(initial || []);
+  }, [initial]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

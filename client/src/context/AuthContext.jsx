@@ -12,7 +12,15 @@ export function AuthProvider({ children }) {
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     if (token && savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setUser(null);
+        setLoading(false);
+        return;
+      }
       // Verify token is still valid
       api.get('/auth/me')
         .then((res) => {

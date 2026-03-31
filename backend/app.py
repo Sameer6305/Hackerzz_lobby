@@ -404,7 +404,7 @@ def analyze_hackathon():
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         hackathon_name = data.get('hackathon_name')
         
         if not hackathon_name:
@@ -463,7 +463,7 @@ def analyze_hackathon():
         print(f"❌ Error in analyze_hackathon: {str(e)}")
         return jsonify({
             'success': False,
-            'error': str(e)
+            'error': 'Internal server error while analyzing hackathon'
         }), 500
 
 

@@ -120,6 +120,10 @@ const getMe = async (req, res, next) => {
       },
     });
 
+    if (!user || !user.isActive) {
+      throw ApiError.unauthorized('User not found or deactivated');
+    }
+
     res.json({ success: true, data: { user: sanitizeUser(user), communities: user.communities } });
   } catch (error) {
     next(error);

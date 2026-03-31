@@ -15,7 +15,7 @@ async function seed() {
     console.log('✅ Database already seeded, skipping.');
     return;
   }
-
+ever
   // Create demo users with realistic profiles
   const password = await bcrypt.hash('password123', 12);
 

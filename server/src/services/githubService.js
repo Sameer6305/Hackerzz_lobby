@@ -68,7 +68,9 @@ const searchRepositories = async ({ domain, techStack = [], keywords = [], sort 
   try {
     const url = new URL(`${GITHUB_API}/search/repositories`);
     url.searchParams.set('q', `${query} in:name,description,readme`);
-    url.searchParams.set('sort', sort === 'relevance' ? '' : sort);
+    if (sort !== 'relevance') {
+      url.searchParams.set('sort', sort);
+    }
     url.searchParams.set('order', 'desc');
     url.searchParams.set('per_page', String(Math.min(perPage, 30)));
 
