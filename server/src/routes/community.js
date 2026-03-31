@@ -2,7 +2,7 @@ const router = require('express').Router();
 const auth = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const {
-  createCommunity, getMyCommunities, getCommunity, addMember, joinCommunity,
+  createCommunity, getMyCommunities, getMyDeadlines, getCommunity, addMember, joinCommunity,
   createCommunitySchema, addMemberSchema,
 } = require('../controllers/communityController');
 const { getMessages, sendMessage, sendMessageSchema } = require('../controllers/chatController');
@@ -12,6 +12,7 @@ const { githubLimiter } = require('../middleware/rateLimiter');
 
 // Community CRUD
 router.get('/', auth, getMyCommunities);
+router.get('/deadlines/all', auth, getMyDeadlines);
 router.post('/', auth, validate(createCommunitySchema), createCommunity);
 router.get('/:id', auth, getCommunity);
 router.post('/:id/join', auth, joinCommunity);

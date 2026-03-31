@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
@@ -8,70 +8,56 @@ import { Clock, AlertTriangle, CheckCircle, Calendar, ArrowRight } from 'lucide-
 
 export default function Deadlines() {
   const navigate = useNavigate();
-  const [communities, setCommunities] = useState([]);
+  const [allDeadlines, setAllDeadlines] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const res = await api.get('/communities');
-        const comms = res.data?.communities || [];
-        // Fetch full details for each community to get deadlines
-        const detailed = await Promise.all(
-          comms.map(async (c) => {
-            try {
-              const detail = await api.get(`/communities/${c.id}`);
-              return { ...c, deadlines: detail.data?.community?.deadlines || [] };
-            } catch {
-              return { ...c, deadlines: [] };
-            }
-          })
-        );
-        setCommunities(detailed);
-      } catch (err) {
+    api.get('/communities/deadlines/all')
+      .then((res) => {
+        const deadlines = (res.data?.deadlines || []).map((d) => ({
+          ...d,
+          communityName: d.community?.name,
+          communityId: d.community?.id,
+        }));
+        setAllDeadlines(deadlines);
+        setError('');
+      })
+      .catch((err) => {
         console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAll();
+        setError('Unable to load deadlines right now. Please try again.');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  // Collect all deadlines with community info
-  const allDeadlines = communities.flatMap((c) =>
-    (c.deadlines || []).map((d) => ({
-      ...d,
-      communityName: c.name,
-      communityId: c.id,
-    }))
-  );
+  const sections = useMemo(() => {
+    const now = new Date();
+    const overdue = allDeadlines.filter(d => {
+      const due = new Date(d.dueDate);
+      return due < now && due.toDateString() !== now.toDateString() && !d.isCompleted;
+    });
+    const today = allDeadlines.filter(d => {
+      const due = new Date(d.dueDate);
+      return due.toDateString() === now.toDateString() && !d.isCompleted;
+    });
+    const upcoming = allDeadlines.filter(d => {
+      const due = new Date(d.dueDate);
+      const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return due > now && due <= weekLater && due.toDateString() !== now.toDateString();
+    });
+    const later = allDeadlines.filter(d => {
+      const due = new Date(d.dueDate);
+      const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return due > weekLater;
+    });
 
-  const now = new Date();
-  const overdue = allDeadlines.filter(d => {
-    const due = new Date(d.dueDate);
-    return due < now && due.toDateString() !== now.toDateString() && !d.isCompleted;
-  });
-  const today = allDeadlines.filter(d => {
-    const due = new Date(d.dueDate);
-    return due.toDateString() === now.toDateString() && !d.isCompleted;
-  });
-  const upcoming = allDeadlines.filter(d => {
-    const due = new Date(d.dueDate);
-    const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    return due > now && due <= weekLater && due.toDateString() !== now.toDateString();
-  });
-  const later = allDeadlines.filter(d => {
-    const due = new Date(d.dueDate);
-    const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    return due > weekLater;
-  });
-
-  const sections = [
-    { title: 'Overdue', items: overdue, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10', dot: 'bg-red-500' },
-    { title: 'Today', items: today, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10', dot: 'bg-amber-500' },
-    { title: 'This Week', items: upcoming, icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/10', dot: 'bg-blue-500' },
-    { title: 'Later', items: later, icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-500/10', dot: 'bg-green-500' },
-  ];
+    return [
+      { title: 'Overdue', items: overdue, icon: AlertTriangle, color: 'text-red-400', bg: 'bg-red-500/10', dot: 'bg-red-500' },
+      { title: 'Today', items: today, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10', dot: 'bg-amber-500' },
+      { title: 'This Week', items: upcoming, icon: Calendar, color: 'text-blue-400', bg: 'bg-blue-500/10', dot: 'bg-blue-500' },
+      { title: 'Later', items: later, icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-500/10', dot: 'bg-green-500' },
+    ];
+  }, [allDeadlines]);
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -79,6 +65,7 @@ export default function Deadlines() {
   };
 
   const getTimeRemaining = (date) => {
+    const now = new Date();
     const diff = new Date(date) - now;
     if (diff < 0) return 'Overdue';
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -106,6 +93,10 @@ export default function Deadlines() {
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <div className="w-8 h-8 border-2 border-gray-600 border-t-indigo-500 rounded-full animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="surface-card border border-red-500/20 rounded-xl p-8 text-center">
+              <p className="text-red-400 text-sm">{error}</p>
             </div>
           ) : allDeadlines.length === 0 ? (
             <div className="surface-card border border-theme rounded-xl p-12 text-center">

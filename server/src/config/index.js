@@ -1,5 +1,11 @@
 require('dotenv').config();
 
+const defaultOrigins = ['http://localhost:5173', 'http://localhost:3000'];
+const envOrigins = (process.env.CORS_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 const config = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT, 10) || 5000,
@@ -19,8 +25,7 @@ const config = {
     cacheTTL: parseInt(process.env.GITHUB_CACHE_TTL, 10) || 600,
   },
   cors: {
-    // Reflect request origin back (works for Vercel, localhost, any preview URL)
-    origin: true,
+    origins: envOrigins.length > 0 ? envOrigins : defaultOrigins,
   },
 };
 

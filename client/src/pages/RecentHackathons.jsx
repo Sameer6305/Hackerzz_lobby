@@ -14,6 +14,7 @@ export default function RecentHackathons() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState('');
+  const [domainFilter, setDomainFilter] = useState('all');
 
   useEffect(() => {
     api.get('/hackathons')
@@ -26,11 +27,19 @@ export default function RecentHackathons() {
       .finally(() => setLoading(false));
   }, []);
 
+  const domains = ['all', ...Array.from(new Set(hackathons.map((h) => h.domain).filter(Boolean)))];
+
   const filtered = hackathons.filter(h =>
     h.name?.toLowerCase().includes(search.toLowerCase()) ||
     h.domain?.toLowerCase().includes(search.toLowerCase()) ||
     h.description?.toLowerCase().includes(search.toLowerCase())
-  );
+  ).filter((h) => domainFilter === 'all' || h.domain === domainFilter);
+
+  useEffect(() => {
+    if (selected && !filtered.some((h) => h.id === selected.id)) {
+      setSelected(filtered[0] || null);
+    }
+  }, [filtered, selected]);
 
   const formatDate = (date) => {
     if (!date) return 'TBD';
@@ -52,15 +61,28 @@ export default function RecentHackathons() {
             <Trophy size={24} className="text-amber-400" /> Hackathons
           </h1>
 
-          {/* Search */}
-          <div className="relative mb-6">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint" />
-            <input
-              className="w-full pl-10 pr-4 py-3 rounded-xl surface-card border border-theme text-heading text-sm placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-              placeholder="Search hackathons..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          {/* Search + Filter */}
+          <div className="grid sm:grid-cols-3 gap-3 mb-6">
+            <div className="relative sm:col-span-2">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-hint" />
+              <input
+                className="w-full pl-10 pr-4 py-3 rounded-xl surface-card border border-theme text-heading text-sm placeholder:text-hint focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                placeholder="Search hackathons..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <select
+              value={domainFilter}
+              onChange={(e) => setDomainFilter(e.target.value)}
+              className="w-full px-3 py-3 rounded-xl surface-card border border-theme text-heading text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            >
+              {domains.map((domain) => (
+                <option key={domain} value={domain}>
+                  {domain === 'all' ? 'All Domains' : domain}
+                </option>
+              ))}
+            </select>
           </div>
 
           {loading ? (

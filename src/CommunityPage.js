@@ -6,6 +6,8 @@ import { getUserProfile, getUserInitials } from './utils/profileUtils';
 import { joinCommunity, leaveCommunity, getUserCommunities, recordContribution } from './utils/userDataUtils';
 import { signOutUser } from './utils/authUtils';
 
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+
 export default function CommunityPage() {
   const { communityId } = useParams();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -85,7 +87,7 @@ export default function CommunityPage() {
     setAnalysisError(null);
     
     try {
-      const response = await fetch('http://localhost:5000/api/analyze-hackathon', {
+      const response = await fetch(`${API_BASE_URL}/api/analyze-hackathon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

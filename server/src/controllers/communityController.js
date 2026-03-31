@@ -95,6 +95,30 @@ const getMyCommunities = async (req, res, next) => {
   }
 };
 
+const getMyDeadlines = async (req, res, next) => {
+  try {
+    const deadlines = await prisma.deadline.findMany({
+      where: {
+        community: {
+          members: {
+            some: { userId: req.user.id },
+          },
+        },
+      },
+      include: {
+        community: {
+          select: { id: true, name: true },
+        },
+      },
+      orderBy: { dueDate: 'asc' },
+    });
+
+    res.json({ success: true, data: { deadlines } });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getCommunity = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -211,6 +235,6 @@ const joinCommunity = async (req, res, next) => {
 };
 
 module.exports = {
-  createCommunity, getMyCommunities, getCommunity, addMember, joinCommunity,
+  createCommunity, getMyCommunities, getMyDeadlines, getCommunity, addMember, joinCommunity,
   createCommunitySchema, addMemberSchema,
 };

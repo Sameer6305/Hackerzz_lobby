@@ -24,10 +24,12 @@ from bs4 import BeautifulSoup
 import json
 import time
 import re
+import os
 from urllib.parse import urljoin, urlparse, quote_plus
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React frontend
+frontend_origins = [origin.strip() for origin in os.getenv('FRONTEND_ORIGINS', 'http://localhost:3000,http://localhost:5173').split(',') if origin.strip()]
+CORS(app, resources={r"/api/*": {"origins": frontend_origins}})
 
 
 # FREE search using DuckDuckGo HTML (no API key needed!)
@@ -488,7 +490,9 @@ if __name__ == '__main__':
     print("✅ Professional quality results")
     print("=" * 60)
     print("\n🚀 Starting Flask server...")
-    print("📍 Server: http://localhost:5000")
+    port = int(os.getenv('PORT', '5000'))
+    debug_mode = os.getenv('FLASK_DEBUG', 'true').lower() == 'true'
+    print(f"📍 Server: http://localhost:{port}")
     print("💚 Cost: $0.00 (FREE!)\n")
     
-    app.run(debug=True, port=5000)
+    app.run(debug=debug_mode, port=port)
