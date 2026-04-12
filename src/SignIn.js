@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInUser } from './utils/authUtils';
+import BrandLogo from './BrandLogo';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -41,7 +42,10 @@ const SignIn = () => {
 
   return (
     <div className="auth-page">
-      <Link to="/" style={{ textDecoration: 'none', color: 'black', fontWeight: 700, marginBottom: 18, fontSize: '1.4rem' }}>&larr; Home</Link>
+      <Link to="/" className="auth-home-link">&larr; Home</Link>
+      <div className="auth-brand-panel">
+        <BrandLogo label="Hackerzz Lobby" size="lg" className="auth-brand" />
+      </div>
       <h2>Welcome Back!</h2>
       <p style={{ color: '#666', marginBottom: 20, fontSize: '0.95rem' }}>
         Sign in to continue to your account

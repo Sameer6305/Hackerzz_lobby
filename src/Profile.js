@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
-import logoImg from './Img/logo.png';
+import BrandLogo from './BrandLogo';
 import { getUserProfile, getUserInitials, isProfileComplete } from './utils/profileUtils';
 import { signOutUser } from './utils/authUtils';
 import { getUserActivityStats, getDomainChartData, getLanguageChartData, getPointsBreakdown, getRecentActivity, formatRelativeTime } from './utils/userDataUtils';
@@ -67,7 +67,7 @@ export default function Profile() {
       {/* Sidebar */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-profile">
-          <img src={logoImg} alt="Logo" className="sidebar-logo" />
+          <BrandLogo label="Hackerzz Lobby" showLabel={false} className="sidebar-logo-wrap" imageClassName="sidebar-logo" />
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{userProfile.name}</div>
             <div className="sidebar-user-role">Student</div>

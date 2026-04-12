@@ -1,10 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
-import logoImg from './Img/logo.png';
+import BrandLogo from './BrandLogo';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
 import { signOutUser } from './utils/authUtils';
 import { getUserCommunities, getUserProjects, getUserActivityStats } from './utils/userDataUtils';
+import DashboardShell from './DashboardShell';
 
 export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,79 +19,9 @@ export default function Dashboard() {
 
   // Handle sign out
   const handleSignOut = () => {
-    const result = signOutUser();
-    if (result.success) {
-      navigate('/');
-    }
-  };
-
-  // Listen for profile updates
-  React.useEffect(() => {
-    const handleProfileUpdate = (event) => {
-      setUserProfile(event.detail);
-    };
-
-    const handleUserDataUpdate = (event) => {
-      setUserCommunities(getUserCommunities());
-      setUserProjects(getUserProjects());
-      setActivityStats(getUserActivityStats());
-    };
-    
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-    window.addEventListener('userDataUpdated', handleUserDataUpdate);
-    return () => {
-      window.removeEventListener('profileUpdated', handleProfileUpdate);
-      window.removeEventListener('userDataUpdated', handleUserDataUpdate);
-    };
-  }, []);
-
-  // Close dropdown when clicking outside
-  React.useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  return (
-    <div className={"dashboard-root" + (sidebarOpen ? "" : " sidebar-collapsed")}>
-      {/* Sidebar */}
-      <aside className="dashboard-sidebar">
-        <div className="sidebar-profile">
-          <img src={logoImg} alt="Logo" className="sidebar-logo" />
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-name">{userProfile.name}</div>
-            <div className="sidebar-user-role">Student</div>
-            <div className="sidebar-user-status">Active</div>
-          </div>
-              {sidebarOpen && (
-                <button className="sidebar-toggle sidebar-toggle--sidebar" onClick={() => setSidebarOpen(false)} aria-label="Collapse sidebar">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="#2d3748" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              )}
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li className="active">Dashboard</li>
-            <li onClick={() => navigate('/recent-hackathons')}>Recent Hackathons</li>
-            <li onClick={() => navigate('/communities')}>Communities</li>
-            <li onClick={() => navigate('/notifications')}>Notifications</li>
-            <li onClick={() => navigate('/deadlines')}>Deadlines</li>
-            <li onClick={() => navigate('/activity')}>Activity</li>
-          </ul>
-        </nav>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="dashboard-main-area">
-        {/* Top App Bar */}
-        <header className="dashboard-appbar">
-          <div className="appbar-left">
+    return (
+      <DashboardShell userProfile={userProfile}>
+        <div className="dashboard-grid">
             {!sidebarOpen && (
               <button className="appbar-toggle" onClick={() => setSidebarOpen(true)} aria-label="Open sidebar">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -297,8 +228,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
       </div>
-    </div>
+    </DashboardShell>
   );
 }

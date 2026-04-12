@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
-import logoImg from './Img/logo.png';
+import BrandLogo from './BrandLogo';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
 import { signOutUser } from './utils/authUtils';
 
@@ -129,7 +129,7 @@ export default function Notifications() {
       {/* Sidebar */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-profile">
-          <img src={logoImg} alt="Logo" className="sidebar-logo" />
+          <BrandLogo label="Hackerzz Lobby" showLabel={false} className="sidebar-logo-wrap" imageClassName="sidebar-logo" />
           <div className="sidebar-user-info">
             <div className="sidebar-user-name">{userProfile.name}</div>
             <div className="sidebar-user-role">Student</div>

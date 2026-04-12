@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import ProtectedRoute from './ProtectedRoute';
 import './App.css';
@@ -18,7 +18,9 @@ import Communities from './Communities';
 import Notifications from './Notifications';
 import Deadlines from './Deadlines';
 import Activity from './Activity';
-import DashboardAppbar from './DashboardAppbar';
+import BrandLogo from './BrandLogo';
+import roughWhite from './Img/rough-white.png';
+import DashboardShell from './DashboardShell';
 
 function MainContent() {
   return (
@@ -26,7 +28,11 @@ function MainContent() {
       <div className="background-image-fade" />
       {/* Hero Section with large container and background */}
       <div className="hero-main-container">
+        <div className="hero-texture" aria-hidden="true" style={{ backgroundImage: `url(${roughWhite})` }} />
         <div className="hero-content">
+          <Link to="/" className="hero-brand-link" aria-label="Hackerzz Lobby home">
+            <BrandLogo label="Hackerzz Lobby" size="lg" className="hero-brand" />
+          </Link>
           <h1 className="hero-title-live">
             <span className="hero-title-main">Hackerzz</span><br />
             <span className="hero-title-sub">Lobby</span>
@@ -168,22 +174,21 @@ function App() {
   return (
     <>
       {!isDashboard && !isProfile && !isEditProfile && !isSettings && !isCommunityCreate && !isCommunityPage && !isRecentHackathons && !isCommunities && !isNotifications && !isDeadlines && !isActivity && <Navbar />}
-      {isCommunityCreate && <DashboardAppbar />}
       <Routes>
         <Route path="/" element={<MainContent />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        <Route path="/community-create" element={<ProtectedRoute><CommunityCreate /></ProtectedRoute>} />
-        <Route path="/community/:communityId" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
-        <Route path="/recent-hackathons" element={<ProtectedRoute><RecentHackathons /></ProtectedRoute>} />
-        <Route path="/communities" element={<ProtectedRoute><Communities /></ProtectedRoute>} />
-        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-        <Route path="/deadlines" element={<ProtectedRoute><Deadlines /></ProtectedRoute>} />
-        <Route path="/activity" element={<ProtectedRoute><Activity /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardShell><Dashboard /></DashboardShell></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><DashboardShell><Profile /></DashboardShell></ProtectedRoute>} />
+        <Route path="/edit-profile" element={<ProtectedRoute><DashboardShell><EditProfile /></DashboardShell></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><DashboardShell><Settings /></DashboardShell></ProtectedRoute>} />
+        <Route path="/community-create" element={<ProtectedRoute><DashboardShell><CommunityCreate /></DashboardShell></ProtectedRoute>} />
+        <Route path="/community/:communityId" element={<ProtectedRoute><DashboardShell><CommunityPage /></DashboardShell></ProtectedRoute>} />
+        <Route path="/recent-hackathons" element={<ProtectedRoute><DashboardShell><RecentHackathons /></DashboardShell></ProtectedRoute>} />
+        <Route path="/communities" element={<ProtectedRoute><DashboardShell><Communities /></DashboardShell></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><DashboardShell><Notifications /></DashboardShell></ProtectedRoute>} />
+        <Route path="/deadlines" element={<ProtectedRoute><DashboardShell><Deadlines /></DashboardShell></ProtectedRoute>} />
+        <Route path="/activity" element={<ProtectedRoute><DashboardShell><Activity /></DashboardShell></ProtectedRoute>} />
       </Routes>
     </>
   );

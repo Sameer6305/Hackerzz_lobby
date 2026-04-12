@@ -1,6 +1,7 @@
 import React from 'react';
 import './Navbar.css';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import BrandLogo from './BrandLogo';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -20,7 +21,9 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-  <div className="navbar-logo">Hackerzz Lobby</div>
+        <Link to="/" onClick={handleHomeClick} className="navbar-logo-link" aria-label="Hackerzz Lobby home">
+          <BrandLogo label="Hackerzz Lobby" className="navbar-brand" />
+        </Link>
         <ul className="navbar-links">
           <li><a href="/" onClick={handleHomeClick}>Home</a></li>
           <li><a href="#about">About</a></li>
@@ -28,7 +31,8 @@ const Navbar = () => {
           <li><a href="#contact">Contact</a></li>
         </ul>
       </div>
-  <div className="navbar-actions">
+      </div>
+      <div className="navbar-actions">
         <Link to="/signin">
           <button className="btn btn-signin">Sign In</button>
         </Link>

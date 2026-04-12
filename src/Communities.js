@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
-import logoImg from './Img/logo.png';
+import BrandLogo from './BrandLogo';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
 import { joinCommunity, getUserCommunities } from './utils/userDataUtils';
 import { signOutUser } from './utils/authUtils';
+import DashboardShell from './DashboardShell';
 
 export default function Communities() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -17,78 +18,9 @@ export default function Communities() {
 
   // Handle sign out
   const handleSignOut = () => {
-    const result = signOutUser();
-    if (result.success) {
-      navigate('/');
-    }
-  };
-
-  // Listen for profile updates
-  useEffect(() => {
-    const handleProfileUpdate = (event) => {
-      setUserProfile(event.detail);
-    };
-    
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
-  }, []);
-
-  // Load communities from localStorage
-  useEffect(() => {
-    const storedCommunities = JSON.parse(localStorage.getItem('communities') || '[]');
-    setCommunities(storedCommunities);
-    
-    // Load joined communities
-    const userCommunities = getUserCommunities();
-    setJoinedCommunityIds(userCommunities.map(c => c.id));
-  }, []);
-
-  // Listen for user data updates
-  useEffect(() => {
-    const handleUserDataUpdate = () => {
-      const userCommunities = getUserCommunities();
-      setJoinedCommunityIds(userCommunities.map(c => c.id));
-    };
-    
-    window.addEventListener('userDataUpdated', handleUserDataUpdate);
-    return () => window.removeEventListener('userDataUpdated', handleUserDataUpdate);
-  }, []);
-
-  // Handle join community
-  const handleJoinCommunity = (community, event) => {
-    event.stopPropagation(); // Prevent navigation to community page
-    
-    const result = joinCommunity(community);
-    if (result.success) {
-      setJoinedCommunityIds([...joinedCommunityIds, community.id]);
-      alert('Successfully joined community! Check your Dashboard to see it.');
-    } else {
-      alert(result.message);
-    }
-  };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  return (
-    <div className={"dashboard-root" + (sidebarOpen ? "" : " sidebar-collapsed")}>
-      {/* Sidebar */}
-      <aside className="dashboard-sidebar">
-        <div className="sidebar-profile">
-          <img src={logoImg} alt="Logo" className="sidebar-logo" />
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-name">{userProfile.name}</div>
-            <div className="sidebar-user-role">Student</div>
-            <div className="sidebar-user-status">Active</div>
-          </div>
+    return (
+      <DashboardShell userProfile={userProfile}>
+        {/* Communities Content */}
           {sidebarOpen && (
             <button className="sidebar-toggle sidebar-toggle--sidebar" onClick={() => setSidebarOpen(false)} aria-label="Collapse sidebar">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -298,7 +230,6 @@ export default function Communities() {
             </section>
           </div>
         </div>
-      </div>
-    </div>
+    </DashboardShell>
   );
 }

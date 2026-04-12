@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile, getUserInitials } from './utils/profileUtils';
+import BrandLogo from './BrandLogo';
+import { signOutUser } from './utils/authUtils';
 
 export default function DashboardAppbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,10 +38,17 @@ export default function DashboardAppbar() {
     }
   }, [menuOpen]);
 
+  const handleSignOut = () => {
+    const result = signOutUser();
+    if (result.success) {
+      navigate('/signin');
+    }
+  };
+
   return (
     <header className="dashboard-appbar">
       <div className="appbar-left">
-        <span className="appbar-title">HACKER.DEV</span>
+        <BrandLogo label="Hackerzz Lobby" size="sm" className="appbar-brand" />
       </div>
       <input className="appbar-search" placeholder="Search" />
       <div className="appbar-user" ref={menuRef} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -61,9 +70,9 @@ export default function DashboardAppbar() {
           <div className="appbar-user-dropdown" ref={dropdownRef}>
             <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/dashboard'); }}>Home</button>
             <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/profile'); }}>Profile</button>
-            <button className="appbar-user-dropdown-item">Settings</button>
+            <button className="appbar-user-dropdown-item" onClick={() => { setMenuOpen(false); navigate('/settings'); }}>Settings</button>
             <div className="appbar-user-dropdown-divider" />
-            <button className="appbar-user-dropdown-item appbar-user-dropdown-signout">Sign Out</button>
+            <button className="appbar-user-dropdown-item appbar-user-dropdown-signout" onClick={handleSignOut}>Sign Out</button>
           </div>
         )}
       </div>

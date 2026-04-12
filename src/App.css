@@ -27,13 +27,166 @@
   background: #f7f9fb;
 }
 .appbar-user-dropdown-divider {
-  height: 1px;
+    background: #e0e0e0;
+    border: none;
+    padding: 0;
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #232733;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
   background: #e0e0e0;
   margin: 4px 0;
 }
 .appbar-user-dropdown-signout {
   color: #e74c3c;
   font-weight: 600;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-logo__image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  transform-origin: center;
+  transition: transform 220ms ease, filter 220ms ease;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+}
+
+.brand-logo--sm .brand-logo__image {
+  width: 36px;
+  height: 36px;
+}
+
+.brand-logo--lg .brand-logo__image {
+  width: 72px;
+  height: 72px;
+}
+
+.brand-logo__label {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.brand-logo:hover .brand-logo__image,
+.brand-logo:focus-visible .brand-logo__image {
+  transform: translateY(-2px) rotate(-6deg) scale(1.05);
+}
+
+.hero-brand-link,
+.auth-home-link {
+  text-decoration: none;
+}
+
+.hero-brand {
+  color: #fff;
+}
+
+.auth-brand-panel {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.auth-brand {
+  color: #222;
+}
+
+.sidebar-logo-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.appbar-brand {
+  color: #2d3748;
+}
+
+.hero-main-container,
+.featured-section-group,
+.auth-form {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-texture,
+.featured-section-group::before,
+.auth-form::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  background-size: 360px;
+  background-image: url('./Img/rough-white.png');
+}
+
+.hero-texture {
+  opacity: 0.14;
+  mix-blend-mode: soft-light;
+}
+
+.featured-section-group::before {
+  content: '';
+  opacity: 0.1;
+  mix-blend-mode: soft-light;
+}
+
+.auth-form::before {
+  content: '';
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+}
+
+.hero-main-container > :not(.hero-texture),
+.featured-section-group > *,
+.auth-form > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-shell .dashboard-root {
+  min-height: auto;
+  background: transparent;
+}
+
+.dashboard-shell .dashboard-root .dashboard-sidebar,
+.dashboard-shell .dashboard-root .dashboard-appbar {
+  display: none !important;
+}
+
+.dashboard-shell .dashboard-root .dashboard-main-area {
+  margin-left: 0 !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.dashboard-shell .dashboard-root .dashboard-grid,
+.dashboard-shell .dashboard-root .communities-content,
+.dashboard-shell .dashboard-root .notifications-content,
+.dashboard-shell .dashboard-root .hackathons-page,
+.dashboard-shell .dashboard-root .profile-container,
+.dashboard-shell .dashboard-root .edit-profile-container,
+.dashboard-shell .dashboard-root .settings-container,
+.dashboard-shell .dashboard-root .deadlines-content,
+.dashboard-shell .dashboard-root .activity-grid {
+  min-height: auto;
+}
+
+.hero-main-container > .hero-texture {
+  z-index: 0;
 }
 /* --- DASHBOARD LAYOUT REBUILD --- */
 .dashboard-root {
@@ -2344,7 +2497,7 @@ html {
   color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: centeral;
+  justify-content: center;
   align-items: flex-start;
   min-width: 260px;
   max-width: 420px;
