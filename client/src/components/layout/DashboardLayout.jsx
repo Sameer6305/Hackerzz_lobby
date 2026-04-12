@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import logoImg from '../../assets/logo.png';
 import {
   LayoutDashboard, Users, Clock, User, Settings, Bell,
   Briefcase, Trophy, LogOut, ChevronLeft, ChevronRight,
@@ -42,12 +43,12 @@ export default function DashboardLayout({ children }) {
       <aside className={`${collapsed ? 'w-20' : 'w-64'} surface-card border-r border-theme flex flex-col transition-all duration-300 fixed top-0 left-0 h-full z-40`}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-theme">
-          <div className="w-9 h-9 bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Zap size={20} className="text-white" />
-          </div>
-          {!collapsed && (
-            <span className="text-lg font-bold text-heading tracking-wide">HACKER.DEV</span>
-          )}
+          <img
+            src={logoImg}
+            alt="Hackerzz Lobby"
+            className="w-10 h-10 rounded-lg flex-shrink-0 object-contain"
+            draggable="false"
+          />
         </div>
 
         {/* Nav Links */}

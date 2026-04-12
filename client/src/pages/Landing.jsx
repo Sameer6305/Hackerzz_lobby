@@ -5,6 +5,7 @@ import {
   Shield, Target, Sparkles, Globe, MessageSquare, Star,
   Rocket, Brain, ChevronRight,
 } from 'lucide-react';
+import logoImg from '../../assets/logo.png';
 import Button from '../components/ui/Button';
 
 const features = [
@@ -56,12 +57,12 @@ export default function Landing() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
           {/* Navbar */}
           <nav className="flex items-center justify-between mb-20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-600/20">
-                <Zap size={22} className="text-white" />
-              </div>
-              <span className="text-xl font-bold tracking-wide">HACKER.DEV</span>
-            </div>
+            <img
+              src={logoImg}
+              alt="Hackerzz Lobby"
+              className="w-12 h-12 rounded-xl shadow-lg shadow-primary-600/20 object-contain"
+              draggable="false"
+            />
             <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
               <a href="#features" className="hover:text-white transition">Features</a>
               <a href="#about" className="hover:text-white transition">About</a>
